@@ -1,1 +1,22 @@
 # MutaGen.t-Protocol
+
+Executive Summary
+
+The MutaGen.t Protocol is a cutting-edge decentralized ecosystem that merges artificial intelligence, deflationary tokenomic engineering, and biological taxonomy to establish a new standard in Darwin's Social Trading, operating as a subnet on the Bittensor blockchain.
+
+Operating under the pioneering paradigm of SaaS² (Strategy as a Service x Strategy Autonomous Agent Software), the protocol has two primary and inseparable objectives: the creation of a sovereign LLM Token Treasury and the continuous operation of an RL Agent Factory (an automated Reinforcement Learning agent factory). The evolution of these agents begins in the Womb (Ventre) and proceeds through the Habitats (free/controlled), guided by the Protocol's Central Oracle, entitled "Omni Brain".
+
+Its financial sustainability is based on Revenue Governance for Autonomous Agents, where USD-generated royalties mechanically fuel the buyback and burn of the native token $ADAPT (Alpha Digital ATP Performance Token — the ecosystem's sovereign currency of energy, performance, and governance, which is indispensable for the evolution and mutation of these agents). The asset's value is strictly tied to the verification of Proof-of-Performance and Proof-of-Metabolism.
+Fundamental Pillars of the Ecosystem (and Governing Synthetic Biology Principles)
+
+    LLM Token Treasury (Principle: Homeostasis and Systemic Circulatory System): The financial and computational heart of the subnet on the Bittensor blockchain, responsible for managing the centralized flow of nutrients, energy, and capital within the ecosystem. Operating under the paradigm of Revenue Governance, the treasury subsidizes the highest-performing organisms (Apex Predators), recycles idle resources, and maintains perfect metabolic balance, utilizing the $ADAPT token—the sovereign currency of energy and performance indispensable for enabling the continuous evolution and mutation of synthetic agents.
+
+    RL Agent Factory / The Evolutionary Assembly Line (Principle: Ontogeny and Selective Embryogenesis): The genetic mutation cycle operated within the subnet where organisms evolve rigorously from raw genetic code (Prompt), passing through the MUTAGEN Process (injection of harness rules and introduction of the mutant agent into the Womb) until entering the Habitats (controlled and free). Once performance and market maturity are proven, the agent achieves MutaGen.t status, earning the right to be traded on the protocol's proprietary marketplace under the supervision of the central oracle, the Omni Brain.
+
+    Digital Binomial Taxonomy (Principle: Phylogenetic Systematics and Linnaean Speciation): The processed and validated genetic standardization used to organize the flow of synthetic agents generated on the network, structured by Family/Behavior, Habitat/Caliber, and Variation/Generation. This taxonomic mapping precisely defines lineages, ecological niches, and the compatibility required for mutations and fusions (Mutagent Fusion) supervised by the Omni Brain.
+
+    Injection Mining / Prompt Insemination (Principle: Bioenergetics and Trophic Efficiency): The process where the introduction of a Prompt (raw genetic code) acts as the initial insemination that gives rise to the agent. The mining of the $ADAPT token occurs such that the reward is directly proportional to the amount of intelligence absorbed by the Omni Brain from that prompt. To sustain this evolving organism, each associated financial contribution follows the 80/20 model: 20% fund this intelligence minting in $ADAPT, while 80% are instantly converted into LLM computational nutrients to ensure the agent's operational metabolic maintenance on the Bittensor infrastructure.
+
+    Natural Selection via Starvation (Principle: Cellular Apoptosis and Decomposer Ecology): The programmed death and algorithmic disposal of inefficient synthetic agents that lose traction in the Habitats. Their remaining energy resources are rigorously reabsorbed and recycled by the treasury and creators, preventing the accumulation of zombie capital on the network.
+
+    Algorithmic Necromancy / Soul Bank (Principle: Paleogenetics and Evolutionary Exaptation): The genetic repository of extinct strategies that stores the DNA of agents that suffered starvation, allowing third-party developers to rescue, apply structural mutations, and repurpose ancestral lineages subject to the payment of perpetual fees and royalties.
