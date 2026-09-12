@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MutaGen.t Protocol | DESaaS Ecosystem Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+        :root { color-scheme: dark; }
+        * { scrollbar-width: thin; scrollbar-color: #164e63 #020617; }
+        body { font-family: 'Space Grotesk', sans-serif; background: #02050d; background-image: radial-gradient(circle at 15% 0%, rgba(6,182,212,.07), transparent 28%), linear-gradient(rgba(15,23,42,.22) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,.22) 1px, transparent 1px); background-size: auto, 48px 48px, 48px 48px; }
+        body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .18; background: repeating-linear-gradient(0deg, transparent 0, transparent 3px, rgba(34,211,238,.025) 4px); z-index: 60; }
+        .mono, .eyebrow { font-family: 'IBM Plex Mono', monospace; }
+        .glow-cyan { box-shadow: 0 0 55px -18px rgba(6, 182, 212, .75), inset 0 1px rgba(103,232,249,.08); }
+        .glow-emerald { box-shadow: 0 0 55px -18px rgba(16, 185, 129, .7), inset 0 1px rgba(110,231,183,.08); }
+        .glow-purple { box-shadow: 0 0 55px -18px rgba(168, 85, 247, .7), inset 0 1px rgba(216,180,254,.08); }
+        .glow-red { box-shadow: 0 0 40px -12px rgba(239, 68, 68, .55); }
+        .glow-amber { box-shadow: 0 0 40px -12px rgba(245, 158, 11, .55); }
+        main > section { position: relative; overflow: hidden; backdrop-filter: blur(16px); background: linear-gradient(135deg, rgba(8,17,29,.72), rgba(2,6,23,.66)) !important; border-radius: .35rem !important; }
+        main { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5rem 1.5rem !important; align-items: stretch; }
+        main > section:nth-child(1), main > section:nth-child(5), main > section:nth-child(6), main > section:nth-child(7) { grid-column: 1 / -1; }
+        #controlled-habitat-module { grid-column: 1 !important; grid-row: 2 !important; }
+        #free-habitat-module { grid-column: 2 !important; grid-row: 2 !important; }
+        #intro-module { grid-column: 1 / -1 !important; grid-row: 1 !important; }
+        #marketplace-module { grid-column: 1 / -1 !important; grid-row: 2 !important; }
+        #controlled-habitat-module { grid-row: 3 !important; }
+        #free-habitat-module { grid-row: 3 !important; }
+        main > section:nth-child(5) { grid-column: 1 / -1 !important; grid-row: 4 !important; }
+        main > section:nth-child(6) { grid-column: 1 / -1 !important; grid-row: 5 !important; }
+        main > section:nth-child(7) { grid-column: 1 / -1 !important; grid-row: 6 !important; }
+        #mutadegen-marketplace { grid-column: 1 / -1 !important; grid-row: 7 !important; }
+        main > section > * { min-width: 0; }
+        main > section:nth-child(3), main > section:nth-child(4) { height: 920px; min-height: 920px; display: flex; flex-direction: column; }
+        main > section:nth-child(3) > div:first-child, main > section:nth-child(4) > div:first-child { min-height: 82px; }
+        main > section:nth-child(3) > .flex.flex-wrap, main > section:nth-child(4) > .flex.flex-wrap { min-height: 34px; }
+        #dropZoneControlado, #dropZoneGlobal { display: flex; flex-direction: column; min-height: 690px; }
+        #dropZoneControlado > span, #dropZoneGlobal > div:first-child { order: 0; min-height: 28px; display: flex; align-items: center; justify-content: center; }
+        #dropZoneControlado > .uac-octagon, #dropZoneGlobal > .uac-octagon { order: 1; height: 430px; min-height: 430px; flex: 0 0 430px; }
+        #dropZoneControlado > #agentesControladosList, #dropZoneGlobal > #agentesArenaUsuarioList { order: 2; min-height: 235px; }
+        #dropZoneGlobal > .grid { order: 3; }
+        #agentesControladosList, #agentesArenaUsuarioList { height: 235px; min-height: 235px; max-height: 235px; overflow-y: scroll; overflow-x: hidden; overscroll-behavior: contain; scrollbar-gutter: stable; padding: .5rem .35rem .5rem 0; }
+        #agentesControladosList::-webkit-scrollbar, #agentesArenaUsuarioList::-webkit-scrollbar { width: 6px; }
+        #agentesControladosList::-webkit-scrollbar-track, #agentesArenaUsuarioList::-webkit-scrollbar-track { background: rgba(15,23,42,.8); }
+        #agentesControladosList::-webkit-scrollbar-thumb, #agentesArenaUsuarioList::-webkit-scrollbar-thumb { background: rgba(103,232,249,.38); border-radius: 999px; }
+        #agentesArenaUsuarioList::-webkit-scrollbar-thumb { background: rgba(216,180,254,.42); }
+        #agentesArenaUsuarioList .organism-node, #agentesControladosList .organism-node { transform: none !important; padding: .55rem .75rem; font-size: 10px; }
+        #agentesArenaUsuarioList .organism-node .text-sm, #agentesControladosList .organism-node .text-sm { font-size: 10px; }
+        main > section::after { content: ''; position: absolute; top: 0; right: 10%; width: 120px; height: 1px; background: linear-gradient(90deg, transparent, rgba(103,232,249,.8), transparent); opacity: .7; }
+        .kanban-lane { background: linear-gradient(180deg, rgba(8,20,32,.72), rgba(2,6,23,.48)); border: 1px solid rgba(71,85,105,.55); box-shadow: inset 0 1px rgba(148,163,184,.06); border-radius: .25rem !important; }
+        .kanban-lane:hover { border-color: rgba(34,211,238,.55); box-shadow: inset 0 1px rgba(103,232,249,.12), 0 0 35px -20px rgba(34,211,238,.8); }
+        .eyebrow { font-weight: 600; letter-spacing: .22em; text-transform: uppercase; }
+        h1, h2, h3, h4 { letter-spacing: -.035em; }
+        main > section > div > div > h2, main > section h2 { text-wrap: balance; }
+        main > section .bg-slate-950\/80, main > section .bg-slate-950\/90, main > section .bg-slate-900\/90 { border-radius: .25rem !important; }
+        .reference-rule { height: 1px; background: linear-gradient(90deg, rgba(34,211,238,.4), rgba(71,85,105,.2), transparent); }
+        .ranking-row { border-top: 1px solid rgba(51,65,85,.45); transition: background .2s ease, border-color .2s ease; }
+        .ranking-row:hover { background: rgba(34,211,238,.045); border-top-color: rgba(34,211,238,.35); }
+        .rank-filter.active { color: #a5f3fc; border-color: rgba(103,232,249,.55); background: rgba(34,211,238,.09); }
+        .rank-filter { color: #64748b; border: 1px solid rgba(71,85,105,.45); padding: .48rem .7rem; font: 600 9px 'IBM Plex Mono', monospace; letter-spacing: .12em; text-transform: uppercase; transition: all .2s ease; }
+        .rank-filter:hover { color: #cbd5e1; border-color: rgba(148,163,184,.65); }
+        .live-dot { box-shadow: 0 0 10px currentColor; }
+        [data-agent-profile] { cursor: pointer; }
+        [data-agent-profile]:hover { border-color: rgba(103,232,249,.5) !important; }
+        .agent-modal-backdrop { background: rgba(1, 5, 13, .82); backdrop-filter: blur(12px); }
+        .agent-modal { background: linear-gradient(145deg, rgba(8,22,34,.98), rgba(3,8,18,.98)); box-shadow: 0 0 80px -24px rgba(34,211,238,.55); }
+        .taxonomy-chip { border: 1px solid rgba(103,232,249,.25); background: rgba(34,211,238,.06); color: #a5f3fc; padding: .45rem .6rem; font: 600 9px 'IBM Plex Mono', monospace; letter-spacing: .08em; text-transform: uppercase; }
+        .taxonomy-value { color: #e2e8f0; font: 500 12px 'IBM Plex Mono', monospace; }
+        .genetic-intake { border: 1px solid rgba(103,232,249,.2); background: linear-gradient(135deg, rgba(8,29,45,.65), rgba(2,6,23,.8)); }
+        .genetic-intake textarea { min-height: 150px; resize: vertical; background: rgba(2,6,23,.85); border: 1px solid rgba(71,85,105,.7); color: #c7f9ff; font: 500 11px/1.65 'IBM Plex Mono', monospace; }
+        .genetic-intake textarea:focus { outline: none; border-color: rgba(103,232,249,.7); box-shadow: 0 0 0 3px rgba(34,211,238,.08); }
+        .genetic-status { min-height: 16px; font: 600 10px 'IBM Plex Mono', monospace; letter-spacing: .04em; }
+        .mutadegen-market { border-color: rgba(244,63,94,.35) !important; background: linear-gradient(135deg, rgba(45,8,24,.62), rgba(10,5,20,.82)) !important; }
+        .mutadegen-listing { border: 1px solid rgba(244,63,94,.22); background: rgba(15,5,18,.7); transition: border-color .2s ease, transform .2s ease, background .2s ease; }
+        .mutadegen-listing:hover { border-color: rgba(251,113,133,.65); background: rgba(55,10,30,.5); transform: translateY(-2px); }
+        .risk-badge { color: #fda4af; border: 1px solid rgba(251,113,133,.35); background: rgba(244,63,94,.1); }
+        .uac-octagon { position: relative; clip-path: polygon(10% 0, 90% 0, 100% 18%, 100% 82%, 90% 100%, 10% 100%, 0 82%, 0 18%); background: radial-gradient(circle at 50% 48%, rgba(34,211,238,.15), transparent 26%), linear-gradient(rgba(103,232,249,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(103,232,249,.045) 1px, transparent 1px), linear-gradient(145deg, rgba(8,29,45,.96), rgba(2,6,23,.96)); background-size: auto, 28px 28px, 28px 28px, auto; min-height: 230px; }
+        .uac-octagon::before { content: ''; position: absolute; inset: 8px; clip-path: inherit; border: 1px solid rgba(103,232,249,.28); box-shadow: inset 0 0 36px rgba(34,211,238,.08); pointer-events: none; z-index: 0; }
+        .uac-octagon::after { content: ''; position: absolute; inset: 18%; border: 1px solid rgba(103,232,249,.16); border-radius: 50%; box-shadow: 0 0 0 18px rgba(103,232,249,.025), 0 0 0 40px rgba(103,232,249,.018); pointer-events: none; z-index: 0; }
+        .uac-octagon.free-arena { background: radial-gradient(circle at 50% 48%, rgba(168,85,247,.16), transparent 26%), linear-gradient(rgba(216,180,254,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(216,180,254,.045) 1px, transparent 1px), linear-gradient(145deg, rgba(24,12,44,.96), rgba(5,3,20,.96)); background-size: auto, 28px 28px, 28px 28px, auto; }
+        .uac-octagon.free-arena::before { border-color: rgba(216,180,254,.3); box-shadow: inset 0 0 36px rgba(168,85,247,.1); }
+        .uac-octagon.free-arena::after { border-color: rgba(216,180,254,.18); box-shadow: 0 0 0 18px rgba(216,180,254,.025), 0 0 0 40px rgba(216,180,254,.018); }
+        .free-arena .synapse { background: linear-gradient(90deg, transparent, rgba(216,180,254,.8), transparent); }
+        .free-arena .synapse::after { background: #d8b4fe; box-shadow: 0 0 10px #d8b4fe; }
+        .energy-field { position: absolute; inset: 6%; border: 1px solid rgba(103,232,249,.08); clip-path: inherit; pointer-events: none; z-index: 1; }
+        .electric-bolt { position: absolute; height: 2px; width: 34%; opacity: .1; background: linear-gradient(90deg, transparent, #67e8f9 42%, #e0f2fe 50%, #67e8f9 58%, transparent); filter: drop-shadow(0 0 5px #22d3ee); transform-origin: left center; animation: electricStrike 3.8s steps(1) infinite; pointer-events: none; z-index: 3; }
+        .bolt-a { top: 34%; left: 8%; transform: rotate(27deg); } .bolt-b { top: 65%; right: 8%; transform: rotate(-26deg); animation-delay: 1.1s; } .bolt-c { top: 17%; left: 46%; width: 24%; transform: rotate(103deg); animation-delay: 2.3s; } .bolt-d { bottom: 17%; right: 40%; width: 22%; transform: rotate(-83deg); animation-delay: 2.8s; }
+        .free-arena .electric-bolt { background: linear-gradient(90deg, transparent, #c084fc 42%, #f5f3ff 50%, #c084fc 58%, transparent); filter: drop-shadow(0 0 5px #a855f7); }
+        .energy-particle { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #a5f3fc; box-shadow: 0 0 9px 2px #22d3ee; animation: particleDrift 5s linear infinite; pointer-events: none; z-index: 2; }
+        .particle-a { left: 18%; top: 24%; animation-delay: -.8s; } .particle-b { left: 76%; top: 36%; animation-delay: -2.4s; } .particle-c { left: 31%; top: 78%; animation-delay: -3.7s; } .particle-d { left: 82%; top: 72%; animation-delay: -1.7s; }
+        .free-arena .energy-particle { background: #e9d5ff; box-shadow: 0 0 9px 2px #a855f7; }
+        @keyframes electricStrike { 0%, 74%, 100% { opacity: .05; } 76% { opacity: .95; } 78% { opacity: .12; } 80% { opacity: .7; } 83% { opacity: .04; } }
+        @keyframes particleDrift { 0% { transform: translate(0,0); opacity: .1; } 35% { opacity: .85; } 70% { transform: translate(32px,-20px); opacity: .45; } 100% { transform: translate(55px,12px); opacity: 0; } }
+        .uac-arena { position: relative; overflow: hidden; }
+        .synapse { position: absolute; height: 1px; transform-origin: left center; background: linear-gradient(90deg, transparent, rgba(103,232,249,.8), transparent); animation: synapse 2.8s ease-in-out infinite; pointer-events: none; }
+        .synapse::after { content: ''; position: absolute; right: 20%; top: -2px; width: 5px; height: 5px; border-radius: 50%; background: #67e8f9; box-shadow: 0 0 10px #67e8f9; }
+        .synapse-a { width: 42%; top: 31%; left: 7%; transform: rotate(18deg); }
+        .synapse-b { width: 36%; top: 67%; right: 7%; transform: rotate(-20deg); animation-delay: .9s; }
+        .synapse-c { width: 30%; top: 48%; left: 35%; transform: rotate(-72deg); animation-delay: 1.7s; }
+        @keyframes synapse { 0%,100% { opacity: .12; } 50% { opacity: .85; } }
+        .organism-node { transition: transform .35s ease, opacity .35s ease; }
+        .time-filter { border: 1px solid rgba(71,85,105,.55); color: #64748b; padding: .4rem .6rem; font: 600 9px 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: .1em; }
+        .time-filter.active, .time-filter:hover { color: #a5f3fc; border-color: rgba(103,232,249,.55); background: rgba(34,211,238,.08); }
+        .creature-layer { position: absolute; inset: 14px 11%; pointer-events: none; z-index: 2; }
+        .bio-creature { position: absolute; width: 70px; height: 70px; border: 1px solid rgba(103,232,249,.8); background: radial-gradient(circle, rgba(4,40,57,.98) 0 28%, rgba(34,211,238,.45) 29% 32%, transparent 33%); clip-path: polygon(50% 0, 86% 14%, 100% 50%, 86% 86%, 50% 100%, 14% 86%, 0 50%, 14% 14%); box-shadow: 0 0 25px rgba(34,211,238,.7), inset 0 0 20px rgba(34,211,238,.5); pointer-events: auto; cursor: grab; transition: width .5s ease, height .5s ease, filter .3s ease; animation: creatureFloat 2.6s ease-in-out infinite; }
+        .bio-creature { border-color: var(--dna-color, #67e8f9); background: radial-gradient(circle, color-mix(in srgb, var(--dna-color, #67e8f9) 25%, #031421) 0 28%, color-mix(in srgb, var(--dna-color, #67e8f9) 65%, transparent) 29% 32%, transparent 33%); box-shadow: 0 0 25px color-mix(in srgb, var(--dna-color, #67e8f9) 70%, transparent), inset 0 0 20px color-mix(in srgb, var(--dna-color, #67e8f9) 55%, transparent); animation-duration: var(--dna-speed, 2.6s); }
+        .bio-creature.variant-ring { clip-path: circle(48% at 50% 50%); }
+        .bio-creature.variant-diamond { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+        .bio-creature.variant-cell { clip-path: polygon(25% 4%, 75% 4%, 96% 25%, 96% 75%, 75% 96%, 25% 96%, 4% 75%, 4% 25%); }
+        .bio-creature.variant-spore { clip-path: polygon(50% 0, 76% 9%, 94% 30%, 94% 70%, 76% 91%, 50% 100%, 24% 91%, 6% 70%, 6% 30%, 24% 9%); }
+        .bio-creature:hover { filter: brightness(1.45); z-index: 4; }
+        .bio-creature.purple { border-color: var(--dna-color, #d8b4fe); background: radial-gradient(circle, color-mix(in srgb, var(--dna-color, #d8b4fe) 25%, #140727) 0 28%, color-mix(in srgb, var(--dna-color, #d8b4fe) 65%, transparent) 29% 32%, transparent 33%); box-shadow: 0 0 25px color-mix(in srgb, var(--dna-color, #d8b4fe) 70%, transparent), inset 0 0 20px color-mix(in srgb, var(--dna-color, #d8b4fe) 55%, transparent); }
+        .bio-creature.prey { opacity: .56; border-color: rgba(253,164,175,.75); filter: saturate(.7); }
+        .bio-creature::before { content: ''; position: absolute; inset: 8%; border: 1px solid rgba(165,243,252,.38); clip-path: inherit; transform: rotate(22deg); animation: orbitSpin 4.5s linear infinite; }
+        .bio-creature::after { content: ''; position: absolute; inset: 20%; border: 1px dashed rgba(103,232,249,.65); border-radius: 50%; animation: orbitSpin 3.2s linear infinite reverse; }
+        .bio-core { position: absolute; inset: 34%; border-radius: 50%; background: color-mix(in srgb, var(--dna-color, #d9faff) 45%, white); box-shadow: 0 0 9px 3px var(--dna-color, #67e8f9), 0 0 28px 8px color-mix(in srgb, var(--dna-color, #67e8f9) 70%, transparent); animation: corePulse var(--dna-pulse, 1.3s) ease-in-out infinite; }
+        .bio-pulse { position: absolute; inset: 5%; border: 1px solid rgba(165,243,252,.25); border-radius: 50%; animation: pulseRing 2s ease-out infinite; }
+        .bio-signal { position: absolute; width: 5px; height: 5px; top: 10%; right: 12%; border-radius: 50%; background: var(--dna-signal, #fef08a); box-shadow: 0 0 10px var(--dna-signal, #facc15); animation: signalBlink var(--dna-blink, 1s) steps(2) infinite; }
+        .creature-label { position: absolute; top: 108%; left: 50%; transform: translateX(-50%); white-space: nowrap; color: #a5f3fc; font: 600 8px 'IBM Plex Mono', monospace; letter-spacing: .08em; text-transform: uppercase; text-shadow: 0 0 8px #020617; }
+        .impact-burst { position: absolute; width: 18px; height: 18px; border: 1px solid #fef08a; border-radius: 50%; box-shadow: 0 0 18px #facc15; animation: impact .65s ease-out forwards; pointer-events: none; }
+        @keyframes creatureFloat { 0%,100% { margin-top: -3px; } 50% { margin-top: 3px; } }
+        @keyframes orbitSpin { to { transform: rotate(382deg); } }
+        @keyframes corePulse { 0%,100% { transform: scale(.7); opacity: .75; } 50% { transform: scale(1.2); opacity: 1; } }
+        @keyframes pulseRing { from { transform: scale(.65); opacity: .8; } to { transform: scale(1.35); opacity: 0; } }
+        @keyframes signalBlink { 50% { opacity: .15; } }
+        @keyframes impact { from { opacity: 1; transform: scale(.4); } to { opacity: 0; transform: scale(2.8); } }
+        .insight-row { border-top: 1px solid rgba(51,65,85,.45); padding: .75rem 0; }
+        .insight-locked { color: #475569; filter: blur(4px); user-select: none; }
+        button { letter-spacing: .02em; }
+        button:focus-visible, [draggable="true"]:focus-visible { outline: 2px solid #22d3ee; outline-offset: 3px; }
+        .pulse-line { animation: pulseLine 2.8s ease-in-out infinite; }
+        @keyframes pulseLine { 0%,100% { opacity: .35; transform: scaleX(.7); } 50% { opacity: 1; transform: scaleX(1); } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
+        @media (max-width: 900px) { main { display: block !important; } main > section { margin-bottom: 2rem !important; height: auto !important; min-height: 0 !important; } #dropZoneControlado, #dropZoneGlobal { min-height: auto; } #dropZoneControlado > .uac-octagon, #dropZoneGlobal > .uac-octagon { height: 320px; min-height: 320px; flex-basis: 320px; } }
+        @media (max-width: 640px) {
+            body { min-width: 0; overflow-x: hidden; }
+            header { padding: .75rem 1rem !important; }
+            header > div { align-items: stretch !important; }
+            header > div > .flex:nth-child(2) { width: 100%; justify-content: space-between; gap: .5rem; padding: .65rem !important; }
+            header > div > .flex:nth-child(2) > div { min-width: 0; }
+            header > div > .flex:nth-child(2) span { font-size: 9px; }
+            header > div > .flex:last-child { justify-content: space-between; }
+            main { padding: 1.25rem 1rem !important; gap: 0 !important; }
+            main > section { padding: 1rem !important; border-radius: 1rem !important; }
+            main > section h2 { font-size: 2.15rem !important; line-height: .95 !important; }
+            #intro-module h2 { font-size: 3.25rem !important; }
+            #intro-module .grid, #marketplace-module .grid { gap: 1.5rem !important; }
+            #marketplace-module .hidden.md\:grid { display: none; }
+            #rankingList { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            #rankingList .ranking-row { min-width: 720px; }
+            #dropZoneControlado, #dropZoneGlobal { padding: 1rem !important; gap: 1rem !important; }
+            #dropZoneControlado > .uac-octagon, #dropZoneGlobal > .uac-octagon { height: 300px; min-height: 300px; flex-basis: 300px; }
+            #agentesControladosList, #agentesArenaUsuarioList { height: 180px; min-height: 180px; max-height: 180px; }
+            #predator-prey-module .grid, #mutadegen-marketplace .grid { grid-template-columns: 1fr !important; }
+            #mutadegen-marketplace > div:first-child { align-items: flex-start; }
+            #mutadegen-marketplace > div:first-child p { text-align: left; }
+            #mutadegen-marketplace .risk-badge { align-self: flex-start; }
+            .agent-modal-backdrop { padding: .5rem !important; align-items: flex-start; }
+            .agent-modal { max-height: calc(100dvh - 1rem); overflow-y: auto; padding: 1rem !important; }
+            .agent-modal h2 { font-size: 1.8rem !important; }
+            .taxonomy-chip { padding: .35rem .4rem; font-size: 8px; }
+            footer { padding: 1.5rem 1rem !important; line-height: 1.6; }
+        }
+    </style>
+</head>
+<body class="text-slate-100 antialiased selection:bg-cyan-500 selection:text-black">
+    <div id="toast" class="fixed right-5 bottom-5 z-[70] hidden max-w-sm border border-cyan-300/35 bg-slate-950/95 px-4 py-3 shadow-2xl shadow-cyan-950/40 backdrop-blur-xl" role="status" aria-live="polite"><div class="eyebrow text-cyan-300">Protocol event</div><p id="toastMessage" class="mt-1 text-xs text-slate-300"></p></div>
+    <div id="agentModal" class="agent-modal-backdrop fixed inset-0 z-[65] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="agentModalTitle" onclick="fecharPerfilSeFora(event)">
+        <div class="agent-modal w-full max-w-3xl border border-cyan-300/25 p-6 md:p-8" onclick="event.stopPropagation()">
+            <div class="flex items-start justify-between gap-5 border-b border-slate-700/70 pb-6">
+                <div><div id="agentModalEyebrow" class="eyebrow text-cyan-300">Digital organism / profile</div><h2 id="agentModalTitle" class="mt-3 text-3xl md:text-5xl font-bold tracking-[-.05em] text-white">MutaGem.t Volatilis Scalper Nano v1</h2><p id="agentModalSubtitle" class="mt-3 text-sm text-slate-500">Market mature · high volatility · fast entries and exits</p></div>
+                <button onclick="fecharPerfil()" class="shrink-0 border border-slate-700 px-3 py-2 text-slate-400 hover:text-white hover:border-cyan-300/50" aria-label="Fechar perfil">×</button>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 py-6"><span id="agentChip1" class="taxonomy-chip">Mkt mature</span><span id="agentChip2" class="taxonomy-chip">High volatility</span><span id="agentChip3" class="taxonomy-chip">Fast execution</span><span id="agentChip4" class="taxonomy-chip">Nano account</span></div>
+            <div class="grid md:grid-cols-2 gap-x-10 gap-y-5 border-t border-slate-800/80 pt-6">
+                <div><div class="eyebrow text-slate-600">Taxonomy</div><dl class="mt-4 space-y-3"><div class="flex justify-between gap-4"><dt class="text-xs text-slate-500">Genus / family</dt><dd id="agentFamily" class="taxonomy-value text-right">MutaGem.t Volatilis</dd></div><div class="flex justify-between gap-4"><dt class="text-xs text-slate-500">Species / subspecies</dt><dd id="agentSpecies" class="taxonomy-value text-right">Scalper Nano</dd></div><div class="flex justify-between gap-4"><dt class="text-xs text-slate-500">Mutation version</dt><dd id="agentVersion" class="taxonomy-value text-right">v1 · first maturation</dd></div></dl></div>
+                <div><div class="eyebrow text-slate-600">Lineage & lifecycle</div><dl class="mt-4 space-y-3"><div class="flex justify-between gap-4"><dt class="text-xs text-slate-500">Organism type</dt><dd id="agentType" class="taxonomy-value text-right">Master organism</dd></div><div class="flex justify-between gap-4"><dt class="text-xs text-slate-500">Parent / clone ID</dt><dd id="agentParent" class="taxonomy-value text-right">GENESIS-0001</dd></div><div class="flex justify-between gap-4"><dt class="text-xs text-slate-500">Current habitat</dt><dd id="agentHabitat" class="taxonomy-value text-right">Incubation capsule</dd></div></dl></div>
+            </div>
+            <div class="mt-7 border border-slate-700/60 bg-slate-950/50 p-4"><div class="flex justify-between items-center"><span class="eyebrow text-slate-600">Biological readout</span><span id="agentStatus" class="eyebrow text-emerald-300">Mature / viable</span></div><p id="agentDescription" class="mt-3 text-sm leading-6 text-slate-400">A compact digital organism optimized for rapid entries and exits in small accounts below $100.</p></div>
+            <div class="mt-5 border border-emerald-300/20 bg-emerald-300/[.025] p-4"><div class="flex items-center justify-between gap-4"><div class="eyebrow text-emerald-300">Strategy brief / decision intelligence</div><span id="insightLevel" class="eyebrow text-slate-500">1 / 3 unlocked</span></div><p id="strategySummary" class="mt-3 text-sm leading-6 text-slate-300">Core thesis loading...</p><div id="strategyInsights" class="mt-3"><div class="insight-row flex justify-between gap-4"><span class="text-xs text-slate-500">Entry / exit logic</span><span id="insightLogic" class="text-xs text-slate-300">Available</span></div><div class="insight-row flex justify-between gap-4"><span class="text-xs text-slate-500">Risk phenotype</span><span id="insightRisk" class="text-xs insight-locked">████████████</span></div><div class="insight-row flex justify-between gap-4"><span class="text-xs text-slate-500">Code architecture</span><span id="insightCode" class="text-xs insight-locked">████████████</span></div></div><div class="mt-4 flex items-center justify-between gap-3"><span id="insightCost" class="mono text-[10px] text-slate-500">Unlock next insight · 5 ADAPT</span><button id="insightUnlockButton" onclick="desbloquearInsight()" class="border border-emerald-300/35 bg-emerald-300/10 px-3 py-2 text-[10px] font-semibold text-emerald-200 hover:bg-emerald-300/20">Unlock insight</button></div></div>
+            <div class="mt-5 border border-cyan-300/20 bg-cyan-300/[.035] p-4"><div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div><div id="agentActionEyebrow" class="eyebrow text-cyan-300">Available protocol action</div><p id="agentActionHelp" class="mt-2 text-xs leading-5 text-slate-500">Choose how to direct this organism.</p></div><div class="flex items-center gap-2"><input id="agentAdaptAmount" type="number" min="1" step="1" value="25" class="w-24 border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white focus:border-cyan-300 focus:outline-none" aria-label="ADAPT amount"><button id="agentActionButton" onclick="executarAcaoAgente()" class="border border-cyan-300/40 bg-cyan-300/10 px-4 py-2 text-xs font-semibold text-cyan-200 hover:bg-cyan-300/20">Deposit ADAPT</button></div></div></div>
+        </div>
+    </div>
+
+    <!-- LLM TOKEN TREASURY | RL AGENT LAB -->
+    <header class="border-b border-cyan-500/15 bg-slate-950/75 backdrop-blur-xl sticky top-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="relative flex items-center justify-center w-10 h-10 rounded-full border border-cyan-300/50 bg-cyan-400/5 shadow-[0_0_24px_-8px_#22d3ee]">
+                    <svg viewBox="0 0 40 40" class="w-7 h-7 text-cyan-300" fill="none" aria-label="MutaGen.t logo">
+                        <circle cx="20" cy="20" r="14" stroke="currentColor" stroke-width="1" opacity=".35"/><path d="M27.5 13.8c-4.2-3.4-10.5-2.8-13.8 1.4-3.4 4.2-2.8 10.5 1.4 13.8 4.2 3.4 10.5 2.8 13.8-1.4 2.1-2.7 2.6-6.2 1.4-9.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M22.4 16.4a5.6 5.6 0 1 0 1.2 7.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="27.5" cy="13.8" r="1.8" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="text-white text-sm font-semibold tracking-tight">MutaGen<span class="text-cyan-300">.t</span></div>
+                    <span class="eyebrow text-[8px] text-slate-500 block mt-0.5">Protocol | The birth of Darwin's Social Trading</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 text-xs mono bg-slate-900/70 border border-slate-700/70 px-5 py-2.5 rounded-2xl shadow-inner shadow-cyan-950/30">
+                <div>
+                    <span class="text-slate-500 block text-[10px]">LLM TOKENS (VENTRE)</span>
+                <span id="tokenBalance" class="text-cyan-400 font-bold text-sm">84,500 <span class="text-[10px] text-slate-400">Tok</span></span>
+                </div>
+                <div class="w-px h-6 bg-slate-800"></div>
+                <div>
+                    <span class="text-slate-500 block text-[10px]">$ADAPT (CAPEX MUTACIONAL)</span>
+                    <span id="adaptBalance" class="text-purple-400 font-bold text-sm">1,240.50 <span class="text-[10px] text-slate-400">$ADAPT</span></span>
+                </div>
+                <div class="w-px h-6 bg-slate-800"></div>
+                <div>
+                    <span class="text-slate-500 block text-[10px]">METABOLIC RATE</span>
+                    <span class="text-emerald-400 font-bold text-sm">2.41 <span class="text-[10px] text-slate-400">Tok/s</span></span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 mono text-[9px] uppercase tracking-[.18em]">
+                <span class="text-emerald-300"><span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-300 mr-2 shadow-[0_0_8px_#6ee7b7]"></span>Arbitrum Sepolia</span>
+                <button onclick="conectarCarteira(this)" class="px-3 py-2 border border-cyan-300/35 text-cyan-200 hover:bg-cyan-300/10 transition rounded-sm">Connect wallet</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-10 space-y-12">
+
+        <section id="intro-module" class="!border-slate-700/70 rounded-[2rem] p-6 md:p-10 glow-cyan">
+            <div class="grid lg:grid-cols-[1.15fr_.85fr] gap-10 items-end">
+                <div class="space-y-5">
+                    <div class="flex items-center gap-2 eyebrow text-cyan-300"><span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_12px_#34d399]"></span> Evolution protocol / live</div>
+                    <h2 class="text-5xl md:text-7xl leading-[.9] font-extrabold tracking-[-.06em] text-white">Spend tokens.<br><span class="text-cyan-300">Evolve agents.</span></h2>
+                    <p class="max-w-xl text-sm leading-7 text-slate-400">Incubate a thesis, trigger mutation, and decide where it survives. You control every move.</p>
+                </div>
+                <div class="lg:border-l lg:border-slate-700/70 lg:pl-8 space-y-5">
+                    <div class="eyebrow text-slate-500">Cell protocol</div>
+                    <div class="space-y-4 mono text-xs">
+                        <div class="flex gap-4 items-start"><span class="text-cyan-300">01</span><div><strong class="text-slate-200 font-normal">Seed the thesis</strong><span class="block mt-1 text-slate-500">Encode a point of view into an executable genome.</span></div></div>
+                        <div class="h-px bg-slate-800"></div>
+                        <div class="flex gap-4 items-start"><span class="text-cyan-300">02</span><div><strong class="text-slate-200 font-normal">Feed the incubation</strong><span class="block mt-1 text-slate-500">LLM tokens become mutation budget and signal.</span></div></div>
+                        <div class="h-px bg-slate-800"></div>
+                        <div class="flex gap-4 items-start"><span class="text-emerald-400">03</span><div><strong class="text-slate-200 font-normal">Drag the agent</strong><span class="block mt-1 text-slate-500">Release it into a controlled or free habitat.</span></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-10 pt-5 border-t border-slate-800/80 flex flex-wrap gap-x-8 gap-y-3 mono text-[10px] uppercase tracking-widest text-slate-500"><span>08 active agents</span><span class="text-emerald-400">+34.2% global alpha</span><span>03 mutation queue</span><span class="text-cyan-300">99.98% system health</span></div>
+        </section>
+
+        <section id="marketplace-module" class="!border-slate-700/70 p-6 md:p-10 space-y-7">
+            <div class="grid lg:grid-cols-[1fr_.72fr] gap-6 items-end">
+                <div class="space-y-4">
+                    <span class="eyebrow text-emerald-300 block">02. Global leaderboard • marketplace</span>
+                    <h2 class="text-5xl md:text-7xl leading-[.88] font-extrabold tracking-[-.06em] text-white">Alpha has a<br><span class="text-emerald-300">pecking order.</span></h2>
+                </div>
+                <div class="space-y-3 text-right">
+                    <p class="text-sm leading-6 text-slate-500">A performance market for every agent in the protocol. Rankings refresh as live telemetry changes.</p>
+                    <div class="flex justify-end items-center gap-2 eyebrow text-emerald-300"><span class="w-1.5 h-1.5 rounded-full bg-emerald-300 live-dot"></span> Ranking stream / 1.0s</div>
+                </div>
+            </div>
+
+            <div class="border border-slate-700/70 bg-slate-950/45">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 px-4 md:px-5 py-4 border-b border-slate-800/80">
+                    <div class="eyebrow text-slate-500">Live protocol ranking / highest net alpha first</div>
+                    <div class="flex gap-1" role="group" aria-label="Ranking filters">
+                        <button class="rank-filter active" onclick="filtrarRanking('all', this)">All</button>
+                        <button class="rank-filter" onclick="filtrarRanking('elite', this)">Elite</button>
+                        <button class="rank-filter" onclick="filtrarRanking('active', this)">Active</button>
+                        <button class="rank-filter" onclick="filtrarRanking('extinct', this)">Extinct</button>
+                    </div>
+                </div>
+                <div class="hidden md:grid grid-cols-[64px_1.8fr_1fr_120px_90px_90px_120px] gap-4 px-5 py-3 eyebrow text-[9px] text-slate-600">
+                    <span>Rank</span><span>Agent / strategy</span><span>State / arena</span><span>Net alpha</span><span>P&amp;L</span><span>Sharpe</span><span>Signal</span>
+                </div>
+                <div id="rankingList">
+                    <div data-agent-profile="RangeGrid_09" data-agent-module="market" class="ranking-row grid grid-cols-[42px_1fr_auto] md:grid-cols-[64px_1.8fr_1fr_120px_90px_90px_120px] gap-4 items-center px-4 md:px-5 py-4" data-state="active" data-alpha="197.56">
+                        <strong class="mono text-amber-200">01</strong><div><div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-cyan-300 live-dot"></span><span class="text-sm text-slate-200">RangeGrid_09</span></div><span class="mono text-[10px] text-slate-600 ml-3.5">Mean reversion mesh</span></div><span class="mono text-[10px] text-cyan-300 border border-cyan-300/25 px-2 py-1">ACTIVE</span><span class="mono text-sm text-emerald-300 rank-alpha">+197.56%</span><span class="hidden md:block mono text-xs text-slate-300">+9.4%</span><span class="hidden md:block mono text-xs text-amber-200">1.61</span><span class="hidden md:block mono text-xs text-emerald-300">↗ rising</span>
+                    </div>
+                    <div data-agent-profile="VolSurface_08" data-agent-module="market" class="ranking-row grid grid-cols-[42px_1fr_auto] md:grid-cols-[64px_1.8fr_1fr_120px_90px_90px_120px] gap-4 items-center px-4 md:px-5 py-4" data-state="elite" data-alpha="178.56">
+                        <strong class="mono text-slate-200">02</strong><div><div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-purple-300 live-dot"></span><span class="text-sm text-slate-200">VolSurface_08</span></div><span class="mono text-[10px] text-slate-600 ml-3.5">Options skew arbitrage</span></div><span class="mono text-[10px] text-purple-200 border border-purple-300/25 px-2 py-1">ELITE</span><span class="mono text-sm text-emerald-300 rank-alpha">+178.56%</span><span class="hidden md:block mono text-xs text-slate-300">+12.8%</span><span class="hidden md:block mono text-xs text-amber-200">1.82</span><span class="hidden md:block mono text-xs text-emerald-300">↗ rising</span>
+                    </div>
+                    <div data-agent-profile="CarryHarvest_12" data-agent-module="market" class="ranking-row grid grid-cols-[42px_1fr_auto] md:grid-cols-[64px_1.8fr_1fr_120px_90px_90px_120px] gap-4 items-center px-4 md:px-5 py-4" data-state="active" data-alpha="165.12">
+                        <strong class="mono text-amber-200">03</strong><div><div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-purple-300 live-dot"></span><span class="text-sm text-slate-200">CarryHarvest_12</span></div><span class="mono text-[10px] text-slate-600 ml-3.5">Funding-rate rotation</span></div><span class="mono text-[10px] text-cyan-300 border border-cyan-300/25 px-2 py-1">ACTIVE</span><span class="mono text-sm text-emerald-300 rank-alpha">+165.12%</span><span class="hidden md:block mono text-xs text-slate-300">+4.8%</span><span class="hidden md:block mono text-xs text-amber-200">1.47</span><span class="hidden md:block mono text-xs text-emerald-300">↗ rising</span>
+                    </div>
+                    <div data-agent-profile="MomentumRaw_v2" data-agent-module="market" class="ranking-row grid grid-cols-[42px_1fr_auto] md:grid-cols-[64px_1.8fr_1fr_120px_90px_90px_120px] gap-4 items-center px-4 md:px-5 py-4" data-state="active" data-alpha="8.04">
+                        <strong class="mono text-slate-500">04</strong><div><div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-cyan-300 live-dot"></span><span class="text-sm text-slate-200">MomentumRaw_v2</span></div><span class="mono text-[10px] text-slate-600 ml-3.5">Momentum / multi-TF</span></div><span class="mono text-[10px] text-cyan-300 border border-cyan-300/25 px-2 py-1">ACTIVE</span><span class="mono text-sm text-emerald-300 rank-alpha">+8.04%</span><span class="hidden md:block mono text-xs text-slate-300">+0.8%</span><span class="hidden md:block mono text-xs text-amber-200">1.38</span><span class="hidden md:block mono text-xs text-emerald-300">↗ rising</span>
+                    </div>
+                    <div data-agent-profile="LiquidityMap_17" data-agent-module="market" class="ranking-row grid grid-cols-[42px_1fr_auto] md:grid-cols-[64px_1.8fr_1fr_120px_90px_90px_120px] gap-4 items-center px-4 md:px-5 py-4" data-state="extinct" data-alpha="-1.26">
+                        <strong class="mono text-slate-600">05</strong><div><div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-rose-300"></span><span class="text-sm text-slate-400">LiquidityMap_17</span></div><span class="mono text-[10px] text-slate-600 ml-3.5">DEX flow imbalance</span></div><span class="mono text-[10px] text-rose-200 border border-rose-300/25 px-2 py-1">EXTINCTION</span><span class="mono text-sm text-rose-300 rank-alpha">-1.26%</span><span class="hidden md:block mono text-xs text-slate-400">-2.1%</span><span class="hidden md:block mono text-xs text-amber-200">1.21</span><span class="hidden md:block mono text-xs text-rose-300">↘ falling</span>
+                    </div>
+                </div>
+                <div class="flex justify-between px-5 py-3 border-t border-slate-800/80 eyebrow text-[8px] text-slate-600"><span>Rank formula / net alpha × survival confidence</span><span>Simulation block / #18,482,219</span></div>
+            </div>
+        </section>
+
+        <!-- 02. HABITAT CONTROLADO (SANDBOX DE TESTES) -->
+        <section id="controlled-habitat-module" class="bg-slate-900/40 border border-cyan-500/30 rounded-3xl p-6 md:p-10 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
+                <div>
+                    <span class="eyebrow text-cyan-300 block">03. Controlled habitat • sandbox</span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">Isolated thesis lab</h2>
+                </div>
+                <div class="inline-flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/30 px-4 py-2 rounded-xl text-cyan-300 text-xs font-mono font-bold">
+                    <span>Drop zone / isolate variables</span>
+                </div>
+            </div>
+            <div class="flex flex-wrap items-center justify-between gap-3"><span class="eyebrow text-slate-600">Performance window</span><div class="flex gap-1" role="group" aria-label="Controlled habitat timeframe"><button class="time-filter active" onclick="filtrarTimeframe('1H', this)">1H</button><button class="time-filter" onclick="filtrarTimeframe('4H', this)">4H</button><button class="time-filter" onclick="filtrarTimeframe('1D', this)">1D</button><button class="time-filter" onclick="filtrarTimeframe('1W', this)">1W</button></div></div>
+
+            <div id="dropZoneControlado" ondragover="permitirDrop(event)" ondrop="soltarNaArena(event, 'Controlled Habitat')" class="kanban-lane border-2 border-dashed border-cyan-500/40 hover:border-cyan-400 rounded-2xl p-6 md:p-8 text-center transition-all flex flex-col items-center justify-center space-y-3 min-h-[190px]">
+                <span class="text-cyan-300 text-xs font-mono font-bold">Drop the Bio Agent here to test isolated variables</span>
+                <div class="uac-arena uac-octagon w-full flex items-center justify-center"><span class="energy-field"></span><span class="electric-bolt bolt-a"></span><span class="electric-bolt bolt-b"></span><span class="electric-bolt bolt-c"></span><span class="electric-bolt bolt-d"></span><span class="energy-particle particle-a"></span><span class="energy-particle particle-b"></span><span class="energy-particle particle-c"></span><span class="energy-particle particle-d"></span><span class="synapse synapse-a"></span><span class="synapse synapse-b"></span><span class="synapse synapse-c"></span><div id="controlledCreatureLayer" class="creature-layer"></div><div class="relative z-10 text-center pointer-events-none"><div class="eyebrow text-cyan-300">UAC / controlled octagon</div><div id="controlledTelemetry" class="mt-2 mono text-xs text-slate-500">Token burn efficiency · awaiting agent</div></div></div>
+                <div id="agentesControladosList" class="w-full space-y-2"></div>
+            </div>
+        </section>
+
+
+        <!-- 03. OPEN ARENA GLOBAL (ARENA COMPLETA COM BORDA PONTILHADA ÚNICA) -->
+        <section id="free-habitat-module" class="bg-slate-900/40 border border-purple-500/30 rounded-3xl p-6 md:p-10 space-y-8 glow-purple">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
+                <div>
+                    <span class="eyebrow text-purple-300 block">03. Free habitat • open arena</span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">Darwin's Survival</h2>
+                </div>
+                <div class="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 px-4 py-2 rounded-xl text-purple-300 text-xs font-mono font-bold">
+                    <span>Live selection / red queen active</span>
+                </div>
+            </div>
+            <div class="flex flex-wrap items-center justify-between gap-3"><span class="eyebrow text-slate-600">Performance window</span><div class="flex gap-1" role="group" aria-label="Free habitat timeframe"><button class="time-filter active" onclick="filtrarTimeframe('1H', this)">1H</button><button class="time-filter" onclick="filtrarTimeframe('4H', this)">4H</button><button class="time-filter" onclick="filtrarTimeframe('1D', this)">1D</button><button class="time-filter" onclick="filtrarTimeframe('1W', this)">1W</button></div></div>
+
+            <!-- CONTAINER ÚNICO PONTILHADO ENGLOBANDO DROPZONE + AGENTES + ELITE + EXTINÇÃO -->
+            <div id="dropZoneGlobal" ondragover="permitirDrop(event)" ondrop="soltarNaArena(event, 'Free Habitat')" class="kanban-lane border-2 border-dashed border-purple-500/40 hover:border-purple-400 rounded-2xl p-6 md:p-8 space-y-6 transition-all min-h-[270px]">
+                
+                <div class="text-center pb-2 border-b border-purple-500/20">
+                    <div class="inline-flex items-center gap-2 text-purple-300 text-xs font-mono font-bold">
+                        <span>Drop the Bio Agent here to enter the free habitat live</span>
+                    </div>
+                </div>
+
+                <!-- Lista Dinâmica de Agentes Inseridos -->
+                <div id="agentesArenaUsuarioList" class="w-full space-y-2"></div>
+                <div class="uac-arena uac-octagon free-arena w-full flex items-center justify-center min-h-[230px]"><span class="energy-field"></span><span class="electric-bolt bolt-a"></span><span class="electric-bolt bolt-b"></span><span class="electric-bolt bolt-c"></span><span class="electric-bolt bolt-d"></span><span class="energy-particle particle-a"></span><span class="energy-particle particle-b"></span><span class="energy-particle particle-c"></span><span class="energy-particle particle-d"></span><span class="synapse synapse-a"></span><span class="synapse synapse-b"></span><span class="synapse synapse-c"></span><div id="globalCreatureLayer" class="creature-layer"></div><div class="relative z-10 text-center pointer-events-none"><div class="eyebrow text-purple-300">UAC / free arena</div><div id="globalTelemetry" class="mt-2 mono text-xs text-slate-500">Synapse activity · awaiting agent</div></div></div>
+
+
+
+            </div>
+        </section>
+
+
+        <!-- 04. PREDATORS & PREYS / CROSS-HABITAT IDENTIFICATION -->
+        <section id="predator-prey-module" class="bg-slate-900/40 border border-rose-400/25 rounded-3xl p-6 md:p-10 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800/80 pb-6">
+                <div><span class="eyebrow text-rose-300 block">04. Cross-habitat taxonomy</span><h2 class="text-3xl md:text-5xl font-extrabold tracking-[-.05em] text-white">Predators &amp; preys</h2></div>
+                <p class="max-w-xl text-right text-sm leading-6 text-slate-500">A single horizontal readout for organisms gaining territory and organisms losing viability across both habitats.</p>
+            </div>
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+                <div class="border border-purple-400/25 bg-purple-400/[.025] p-5"><div class="flex items-center justify-between mb-4"><span class="eyebrow text-purple-300">Free Habitat / apex predators</span><span class="mono text-[10px] text-purple-300">LIVE SELECTION</span></div><div class="grid gap-2"><div class="predator-row flex items-center justify-between gap-3 border-b border-purple-400/15 py-2"><span class="text-xs text-slate-300">VolSurface_08</span><span class="mono text-xs text-emerald-300">+24.6% alpha</span><span class="mono text-[10px] text-purple-300">2.8x size</span></div><div class="predator-row flex items-center justify-between gap-3 border-b border-purple-400/15 py-2"><span class="text-xs text-slate-300">PulseArbiter_04</span><span class="mono text-xs text-emerald-300">+21.1% alpha</span><span class="mono text-[10px] text-purple-300">2.4x size</span></div></div></div>
+                <div class="border border-cyan-400/25 bg-cyan-400/[.025] p-5"><div class="flex items-center justify-between mb-4"><span class="eyebrow text-cyan-300">Controlled Habitat / emerging organisms</span><span class="mono text-[10px] text-cyan-300">ISOLATED TEST</span></div><div class="grid gap-2"><div class="predator-row flex items-center justify-between gap-3 border-b border-cyan-400/15 py-2"><span class="text-xs text-slate-300">NeuroFlux_21</span><span class="mono text-xs text-emerald-300">+18.4% alpha</span><span class="mono text-[10px] text-cyan-300">2.1x size</span></div><div class="predator-row flex items-center justify-between gap-3 border-b border-cyan-400/15 py-2"><span class="text-xs text-slate-300">QuantaSpore_07</span><span class="mono text-xs text-amber-300">+4.9% alpha</span><span class="mono text-[10px] text-cyan-300">1.2x size</span></div></div></div>
+            </div>
+        </section>
+
+        <!-- 01. TOPO: O VENTRE (CÁPSULAS DE GESTAÇÃO DE RAW BOTS) -->
+        <section class="bg-slate-900/40 border border-cyan-500/30 rounded-3xl p-6 md:p-10 space-y-6 glow-cyan">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
+                <div>
+                    <span class="eyebrow text-cyan-300 block">Ventre / incubation capsule • thesis seed</span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">Earn the right to evolve</h2>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span id="capsuleCount" class="eyebrow text-slate-500">02 active capsules</span>
+                    <button onclick="inseminarRawBot()" class="px-4 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold hover:bg-cyan-500/20 transition">
+                        + Inseminar New Raw Bot
+                    </button>
+                </div>
+            </div>
+
+            <div id="incubacaoList" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Raw Bot Em Gestação 1 -->
+                <div data-agent-profile="TrendRaw_Alpha_v1" data-agent-module="ventre" class="bg-slate-950/80 border border-slate-800 rounded-2xl p-6 space-y-4 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-cyan-500/20 text-cyan-400 text-[10px] font-mono px-3 py-1 rounded-bl-xl font-bold">Incubation active (82%)</div>
+                    <span class="text-xs font-mono text-slate-500 block">Capsule #VENTRE-01 • Raw Bot base</span>
+                    <h3 class="text-white font-bold text-lg">TrendRaw_Alpha_v1</h3>
+                    <div class="space-y-2 text-xs mono">
+                        <div class="flex justify-between"><span class="text-slate-400">LLM token consumption:</span><span class="text-cyan-400 font-bold">12,400 Tok</span></div>
+                        <div class="flex justify-between"><span class="text-slate-400">Mutation cost ($ADAPT):</span><span class="text-purple-400 font-bold">45.0 $ADAPT</span></div>
+                        <div class="w-full bg-slate-900 rounded-full h-2 mt-2 overflow-hidden border border-slate-800">
+                            <div class="bg-cyan-400 h-full rounded-full" style="width: 82%"></div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400">Thermodynamically isolated. The organism is self-correcting logical errors before release.</p>
+                    <button onclick="mutarRawBot('TrendRaw_Alpha_v1', this)" class="raw-mutation-button w-full border border-cyan-300/30 bg-cyan-300/[.06] px-3 py-2 text-[10px] font-semibold text-cyan-200 hover:bg-cyan-300/15">Create Bio Agent from this Raw Bot</button>
+                </div>
+
+                <!-- Raw Bot com Janela 1 vs Janela 2 Condicional -->
+                <div data-agent-profile="MomentumRaw_v2" data-agent-module="ventre" class="bg-slate-950/90 border border-emerald-500/50 rounded-2xl p-6 space-y-4 relative overflow-hidden glow-emerald">
+                    <div class="absolute top-0 right-0 bg-emerald-500/20 text-emerald-400 text-[10px] font-mono px-3 py-1 rounded-bl-xl font-bold">Ready for mitosis</div>
+                    <span class="text-xs font-mono text-emerald-400 block">Capsule #VENTRE-02 • Maturation complete</span>
+                    <h3 class="text-white font-bold text-lg">MomentumRaw_v2</h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs mono py-1">
+                        <!-- Janela 1: Sempre Visível -->
+                        <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+                            <span class="text-[10px] text-slate-500 block uppercase font-bold">Window 1 (Raw Bot)</span>
+                            <span class="text-slate-300 font-bold text-sm block">Sharpe: 1.12</span>
+                            <span class="text-[10px] text-slate-400 block">Raw P&L: -1.2%</span>
+                        </div>
+                        
+                        <!-- Janela 2: Oculta até o clique, depois vira Draggable -->
+                        <div id="janela2Container" class="bg-slate-900/90 p-3 rounded-xl border border-dashed border-emerald-500/40 space-y-1 flex flex-col justify-center items-center text-center transition-all">
+                            <span class="text-[10px] text-emerald-400 block uppercase font-bold">Window 2 (Bio Agent)</span>
+                            <span id="janela2StatusText" class="text-[10px] text-slate-400 italic">Awaiting cell division...</span>
+                        </div>
+                    </div>
+                    <button onclick="mutarRawBot('MomentumRaw_v2', this)" class="raw-mutation-button w-full border border-emerald-300/30 bg-emerald-300/[.06] px-3 py-2 text-[10px] font-semibold text-emerald-200 hover:bg-emerald-300/15">Create Bio Agent from this Raw Bot</button>
+                </div>
+            </div>
+        </section>
+
+
+
+
+        <!-- 04. DIGITAL SOUL BANK (DSB) & MARKETPLACE -->
+        <section class="bg-slate-900/40 border border-amber-500/30 rounded-3xl p-6 md:p-10 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
+                <div>
+                    <span class="eyebrow text-amber-300 block">05. Digital soul bank • archive</span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">Preserve the signal</h2>
+                </div>
+                <div class="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-4 py-2 rounded-xl text-amber-300 text-xs font-mono font-bold">
+                    <span>Reanimation window / 47h remaining</span>
+                </div>
+            </div>
+            <div id="dropZoneMarketplace" ondragover="permitirDrop(event)" ondrop="soltarNoMarketplace(event)" class="kanban-lane border-2 border-dashed border-amber-500/35 hover:border-amber-300 p-5 text-center transition-all"><span class="eyebrow text-amber-300">Drop mature agents here / list on marketplace</span><div id="marketplaceAgentsList" class="mt-3 space-y-2"></div></div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <span class="text-xs font-mono text-amber-400 uppercase font-bold">Deceased souls (your accounts)</span>
+                        <div data-agent-profile="Bot_Alpha_Extinct_v1" data-agent-module="soul" class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="text-white font-bold text-sm">Bot_Alpha_Extinct_v1</h4>
+                                <span class="text-[10px] font-mono text-slate-500">Ancestral DNA: historical Sharpe 2.40</span>
+                            </div>
+                            <span class="text-xs font-mono text-amber-400">Expires in 47h</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Reanimate this soul with a new body and preserved history.</p>
+                        <button onclick="reanimarAlma()" class="w-full py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold hover:bg-amber-500/30 transition">
+                            Reanimate soul (deposit tokens)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-mono text-cyan-400 uppercase font-bold">Orphan soul marketplace (catalog)</span>
+                        <span class="text-[10px] font-mono text-slate-500">Showing 3 available</span>
+                    </div>
+
+                    <div class="space-y-3 max-h-64 overflow-y-auto pr-1">
+                        <div data-agent-profile="Orphan_Strategy_#882" data-agent-module="soul" class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <h4 class="text-white font-bold text-xs">Orphan_Strategy_#882 (Momentum)</h4>
+                                <span class="text-[10px] font-mono text-emerald-400">Royalties: 5%</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px] font-mono text-slate-400">
+                                <span>Previous Sharpe: 2.81</span>
+                                <button onclick="adotarAlma('Orphan_Strategy_#882')" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 font-bold hover:bg-cyan-500/30 transition">License</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 06. MUTADEGEN.T / HIGH-RISK MARKETPLACE -->
+        <section id="mutadegen-marketplace" class="mutadegen-market border rounded-3xl p-6 md:p-10 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-5 border-b border-rose-400/20 pb-6">
+                <div><span class="eyebrow text-rose-300 block">06. MutaDeGen.t marketplace</span><h2 class="text-3xl md:text-5xl font-extrabold tracking-[-.05em] text-white">Asymmetric organisms.</h2><p class="mt-3 max-w-2xl text-sm leading-6 text-slate-400">High-risk agents shaped by thin liquidity, low market-cap pairs, and extreme volatility. Performance creates market value; it does not remove risk.</p></div>
+                <div class="risk-badge px-3 py-2 mono text-[10px] font-bold uppercase tracking-[.14em]">Speculative tier / non-custodial</div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                <div data-agent-profile="MutaDeGen_Volatile_01" data-agent-module="market" class="mutadegen-listing p-4 space-y-3 cursor-pointer">
+                    <div class="flex items-center justify-between gap-3"><span class="mono text-[10px] text-rose-300">MUTADEGEN / 001</span><span class="risk-badge px-2 py-1 mono text-[9px]">HIGH RISK</span></div><h3 class="text-white font-semibold">Volatilis MicroCap v1</h3><p class="text-[10px] leading-5 text-slate-500">Thin-liquidity breakout hunter for emerging pairs.</p><div class="grid grid-cols-3 gap-2 border-t border-rose-400/15 pt-3 mono text-[10px]"><span><b class="block text-emerald-300">+86.4%</b>Net alpha</span><span><b class="block text-amber-200">0.42</b>Liquidity</span><span><b class="block text-rose-300">8.7</b>Risk index</span></div><button onclick="event.stopPropagation(); listarMutaDeGen('Volatilis MicroCap v1')" class="w-full border border-rose-300/30 bg-rose-300/[.06] px-3 py-2 text-[10px] font-semibold text-rose-200 hover:bg-rose-300/[.13]">Acquire strategy license</button>
+                </div>
+                <div data-agent-profile="MutaDeGen_Shard_02" data-agent-module="market" class="mutadegen-listing p-4 space-y-3 cursor-pointer">
+                    <div class="flex items-center justify-between gap-3"><span class="mono text-[10px] text-rose-300">MUTADEGEN / 002</span><span class="risk-badge px-2 py-1 mono text-[9px]">HIGH RISK</span></div><h3 class="text-white font-semibold">Shard Liquidity v2</h3><p class="text-[10px] leading-5 text-slate-500">Fragmented-pool arbitrage with rapid exit logic.</p><div class="grid grid-cols-3 gap-2 border-t border-rose-400/15 pt-3 mono text-[10px]"><span><b class="block text-emerald-300">+64.1%</b>Net alpha</span><span><b class="block text-amber-200">0.31</b>Liquidity</span><span><b class="block text-rose-300">9.1</b>Risk index</span></div><button onclick="event.stopPropagation(); listarMutaDeGen('Shard Liquidity v2')" class="w-full border border-rose-300/30 bg-rose-300/[.06] px-3 py-2 text-[10px] font-semibold text-rose-200 hover:bg-rose-300/[.13]">Acquire strategy license</button>
+                </div>
+                <div data-agent-profile="MutaDeGen_Nano_03" data-agent-module="market" class="mutadegen-listing p-4 space-y-3 cursor-pointer">
+                    <div class="flex items-center justify-between gap-3"><span class="mono text-[10px] text-rose-300">MUTADEGEN / 003</span><span class="risk-badge px-2 py-1 mono text-[9px]">HIGH RISK</span></div><h3 class="text-white font-semibold">Nano Pair Predator v3</h3><p class="text-[10px] leading-5 text-slate-500">Small-cap momentum with severe slippage sensitivity.</p><div class="grid grid-cols-3 gap-2 border-t border-rose-400/15 pt-3 mono text-[10px]"><span><b class="block text-emerald-300">+51.8%</b>Net alpha</span><span><b class="block text-amber-200">0.18</b>Liquidity</span><span><b class="block text-rose-300">9.6</b>Risk index</span></div><button onclick="event.stopPropagation(); listarMutaDeGen('Nano Pair Predator v3')" class="w-full border border-rose-300/30 bg-rose-300/[.06] px-3 py-2 text-[10px] font-semibold text-rose-200 hover:bg-rose-300/[.13]">Acquire strategy license</button>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row justify-between gap-3 border-t border-rose-400/15 pt-4 mono text-[10px] text-slate-500"><span>Eligibility: positive outlier performance / minimum observation window / risk disclosure</span><span class="text-rose-300">No custody · users operate with their own keys</span></div>
+        </section>
+    </main>
+
+    <!-- Script de Tempo Real e Roteamento de Drop por Arena -->
+    <script>
+        let agenteMutadoPronto = false;
+        let activeAgentsInArena = [
+            { id: 'seed_rangegrid', name: 'RangeGrid_09', destination: 'Controlled Habitat', entryTime: new Date(Date.now() - 780000), netAlpha: 12.8, tokenBurn: 640, secondsElapsed: 780 },
+            { id: 'seed_momentum', name: 'MomentumRaw_v2', destination: 'Controlled Habitat', entryTime: new Date(Date.now() - 510000), netAlpha: 8.04, tokenBurn: 410, secondsElapsed: 510 },
+            { id: 'seed_neuroflux', name: 'NeuroFlux_21', destination: 'Controlled Habitat', entryTime: new Date(Date.now() - 680000), netAlpha: 18.4, tokenBurn: 520, secondsElapsed: 680 },
+            { id: 'seed_spore', name: 'QuantaSpore_07', destination: 'Controlled Habitat', entryTime: new Date(Date.now() - 420000), netAlpha: 4.9, tokenBurn: 355, secondsElapsed: 420 },
+            { id: 'seed_axiom', name: 'AxiomDrift_13', destination: 'Controlled Habitat', entryTime: new Date(Date.now() - 330000), netAlpha: 9.2, tokenBurn: 290, secondsElapsed: 330 },
+            { id: 'seed_volsurface', name: 'VolSurface_08', destination: 'Free Habitat', entryTime: new Date(Date.now() - 920000), netAlpha: 24.6, tokenBurn: 890, secondsElapsed: 920 },
+            { id: 'seed_carry', name: 'CarryHarvest_12', destination: 'Free Habitat', entryTime: new Date(Date.now() - 630000), netAlpha: 16.5, tokenBurn: 710, secondsElapsed: 630 },
+            { id: 'seed_pulse', name: 'PulseArbiter_04', destination: 'Free Habitat', entryTime: new Date(Date.now() - 740000), netAlpha: 21.1, tokenBurn: 610, secondsElapsed: 740 },
+            { id: 'seed_vanta', name: 'VantaClaw_02', destination: 'Free Habitat', entryTime: new Date(Date.now() - 570000), netAlpha: 6.7, tokenBurn: 480, secondsElapsed: 570 },
+            { id: 'seed_helix', name: 'HelixYield_16', destination: 'Free Habitat', entryTime: new Date(Date.now() - 280000), netAlpha: 11.3, tokenBurn: 320, secondsElapsed: 280 }
+        ];
+        const dnaCatalog = {
+            RangeGrid_09: ['#67e8f9', 'polygon', '2.4s', '#fef08a', '1.1s'], MomentumRaw_v2: ['#34d399', 'cell', '1.8s', '#a7f3d0', '1.4s'], NeuroFlux_21: ['#38bdf8', 'ring', '3.1s', '#f0abfc', '1.8s'], QuantaSpore_07: ['#fbbf24', 'spore', '2.1s', '#fb7185', '.8s'], AxiomDrift_13: ['#c084fc', 'diamond', '4s', '#67e8f9', '1.5s'],
+            VolSurface_08: ['#d8b4fe', 'ring', '2.2s', '#fde68a', '1s'], CarryHarvest_12: ['#a78bfa', 'diamond', '3.4s', '#86efac', '1.6s'], PulseArbiter_04: ['#f472b6', 'spore', '1.6s', '#fef08a', '.7s'], VantaClaw_02: ['#818cf8', 'cell', '2.8s', '#fb7185', '1.2s'], HelixYield_16: ['#e879f9', 'polygon', '3.8s', '#c4b5fd', '1.9s']
+        };
+        let simulationInterval = null;
+        let rankingInterval = null;
+        let rawBotCount = 2;
+        let toastTimer = null;
+        let currentAgentName = 'MomentumRaw_v2';
+        let currentAgentModule = 'market';
+        let adaptBalanceValue = 1240.50;
+        const approvedGenomes = new Set();
+        const agentProfiles = {
+            'MutaDeGen_Volatile_01': { title: 'MutaDeGen.t Volatilis MicroCap v1', subtitle: 'Speculative · thin liquidity · asymmetric volatility', chips: ['MutaDeGen.t', 'Micro-cap', 'Thin liquidity', 'High risk'], family: 'MutaDeGen.t Volatilis', species: 'MicroCap Predator', version: 'v1 · speculative mutation', type: 'Master organism', parent: 'GENESIS-MD-01', habitat: 'MutaDeGen.t marketplace', status: 'Listed / extreme risk', description: 'A speculative organism targeting thin-liquidity breakouts. Positive simulated performance is not a guarantee of future results.' },
+            'MutaDeGen_Shard_02': { title: 'MutaDeGen.t Shard Liquidity v2', subtitle: 'Speculative · fragmented pools · rapid exits', chips: ['MutaDeGen.t', 'Fragmented pools', 'Rapid exit', 'High risk'], family: 'MutaDeGen.t Shardia', species: 'Liquidity Fragment', version: 'v2 · speculative mutation', type: 'Clone / active', parent: 'MASTER-SHARD-02', habitat: 'MutaDeGen.t marketplace', status: 'Listed / extreme risk', description: 'A high-variance clone trained on fragmented liquidity behavior and sensitive to execution conditions.' },
+            'MutaDeGen_Nano_03': { title: 'MutaDeGen.t Nano Pair Predator v3', subtitle: 'Speculative · low market cap · severe slippage', chips: ['MutaDeGen.t', 'Nano pairs', 'Low market cap', 'High risk'], family: 'MutaDeGen.t Nanovor', species: 'Pair Predator', version: 'v3 · speculative mutation', type: 'Clone / active', parent: 'MASTER-NANO-03', habitat: 'MutaDeGen.t marketplace', status: 'Listed / extreme risk', description: 'A small-cap momentum clone with strong simulated alpha and severe sensitivity to slippage and liquidity withdrawal.' },
+            'MomentumRaw_v2': { title: 'MutaGem.t Momentumus MultiTF v2', subtitle: 'Market mature · momentum adaptation · live habitat ready', chips: ['Mkt mature', 'Trend following', 'Multi timeframe', 'Bio Agent'], family: 'MutaGem.t Momentumus', species: 'MultiTF Runner', version: 'v2 · adaptive mutation', type: 'Master organism', parent: 'GENESIS-0001', habitat: 'Controlled / Free Habitat', status: 'Mature / viable', description: 'A mature master organism that reads directional momentum across timeframes and can reproduce as specialized clones.' },
+            'TrendRaw_Alpha_v1': { title: 'MutaGem.t Trendia Alpha v1', subtitle: 'Incubating · logical correction · raw organism', chips: ['Mkt emerging', 'Trend signal', 'Self-correcting', 'Raw bot'], family: 'MutaGem.t Trendia', species: 'Alpha Seed', version: 'v1 · first maturation', type: 'Raw organism', parent: 'THESIS-0084', habitat: 'Incubation capsule', status: 'Incubating / 82%', description: 'A raw digital organism still correcting its internal logic before it earns release into a habitat.' },
+            'Bot_Alpha_Extinct_v1': { title: 'MutaGem.t Alpha Mortua v1', subtitle: 'Archived · ancestral DNA preserved · reanimation eligible', chips: ['Mkt mature', 'Legacy genome', 'Dormant', 'Soul bank'], family: 'MutaGem.t Alpha', species: 'Mortua Legacy', version: 'v1 · archived mutation', type: 'Master organism', parent: 'GENESIS-0007', habitat: 'Digital Soul Bank', status: 'Dormant / recoverable', description: 'An archived organism whose historical DNA and performance memory remain available for reanimation.' },
+            'Orphan_Strategy_#882': { title: 'MutaGem.t Volatilis Scalper Nano v1', subtitle: 'Market mature · high volatility · fast entries and exits', chips: ['Mkt mature', 'High volatility', 'Fast execution', 'Nano account'], family: 'MutaGem.t Volatilis', species: 'Scalper Nano', version: 'v1 · first maturation', type: 'Master organism', parent: 'ORPHAN-0882', habitat: 'Soul marketplace', status: 'Orphan / licensable', description: 'A compact digital organism optimized for rapid entries and exits in small accounts below $100.' },
+            'RangeGrid_09': { title: 'MutaGem.t Gridus Range v9', subtitle: 'Controlled habitat · mean reversion mesh · top performer', chips: ['Mkt mature', 'Mean reversion', 'Controlled', 'Elite alpha'], family: 'MutaGem.t Gridus', species: 'Range Mesh', version: 'v9 · refined mutation', type: 'Clone / active', parent: 'MASTER-GRID-01', habitat: 'Controlled Habitat', status: 'Active / rising', description: 'A high-confidence clone that maps range behavior inside an isolated thesis environment.' },
+            'VolSurface_08': { title: 'MutaGem.t Volatilis Surface v8', subtitle: 'Free habitat · options skew arbitrage · elite organism', chips: ['Mkt mature', 'Options skew', 'Free habitat', 'Elite'], family: 'MutaGem.t Volatilis', species: 'Surface Arbitrage', version: 'v8 · elite mutation', type: 'Master organism', parent: 'GENESIS-0021', habitat: 'Free Habitat', status: 'Elite / rising', description: 'A resilient organism adapted to volatility surfaces and competitive open-habitat selection.' },
+            'CarryHarvest_12': { title: 'MutaGem.t Carryus Harvest v12', subtitle: 'Free habitat · funding-rate rotation · active organism', chips: ['Mkt mature', 'Funding rotation', 'Free habitat', 'Active'], family: 'MutaGem.t Carryus', species: 'Harvest Rotation', version: 'v12 · evolved mutation', type: 'Clone / active', parent: 'MASTER-CARRY-04', habitat: 'Free Habitat', status: 'Active / rising', description: 'A specialized clone that harvests funding-rate differentials while adapting to the wider arena.' },
+            'LiquidityMap_17': { title: 'MutaGem.t Liquida Map v17', subtitle: 'Extinction zone · DEX flow imbalance · archived signal', chips: ['Mkt stressed', 'DEX flow', 'Extinct', 'Risk'], family: 'MutaGem.t Liquida', species: 'Map Imbalance', version: 'v17 · terminal mutation', type: 'Clone / extinct', parent: 'MASTER-LIQ-02', habitat: 'Extinction Zone', status: 'Extinct / archived', description: 'A failed clone retained for study, allowing the protocol to learn from terminal survival conditions.' }
+        };
+        const strategyIntelligence = {
+            'Orphan_Strategy_#882': { summary: 'High-volatility scalper for accounts below $100, targeting micro-inefficiencies and exiting positions quickly.', logic: 'Enters on short breakouts; exits at a fixed target or spread reversal.', risk: 'High frequency · drawdown controlled by small position size · sensitive to slippage.', code: 'Modular engine with volatility detector, liquidity filter, and event-driven execution.' },
+            'MomentumRaw_v2': { summary: 'Follows trend acceleration across multiple timeframes and adapts position size to confirmed signals.', logic: 'Confirms direction on the higher timeframe; enters on the lower timeframe; trails the exit.', risk: 'Moderate directional risk · reduced exposure in sideways regimes.', code: 'Layered signal pipeline with context memory and incremental mutation.' },
+            'RangeGrid_09': { summary: 'Exploits mean reversion in sideways markets through a disciplined mesh of small entries.', logic: 'Buys lower extremes and reduces exposure as price returns to the center of the range.', risk: 'Vulnerable to persistent trends; protected by an inventory limit.', code: 'Adaptive grid with dynamic bands and regime kill-switch.' }
+        };
+        let currentInsightLevel = 1;
+
+        function abrirPerfil(nome, modulo = 'market') {
+            const data = agentProfiles[nome] || agentProfiles['MomentumRaw_v2'];
+            currentAgentName = nome;
+            currentAgentModule = modulo;
+            document.getElementById('agentModalTitle').textContent = data.title;
+            document.getElementById('agentModalSubtitle').textContent = data.subtitle;
+            ['agentChip1','agentChip2','agentChip3','agentChip4'].forEach((id, index) => document.getElementById(id).textContent = data.chips[index] || 'Digital organism');
+            document.getElementById('agentFamily').textContent = data.family;
+            document.getElementById('agentSpecies').textContent = data.species;
+            document.getElementById('agentVersion').textContent = data.version;
+            document.getElementById('agentType').textContent = data.type;
+            document.getElementById('agentParent').textContent = data.parent;
+            document.getElementById('agentHabitat').textContent = data.habitat;
+            document.getElementById('agentStatus').textContent = data.status;
+            document.getElementById('agentDescription').textContent = data.description;
+            const actionCopy = {
+                ventre: ['Feed the mutation', 'Deposit ADAPT to direct more LLM tokens into this organism and accelerate maturation.', 'Accelerate mutation'],
+                soul: ['Reanimate the lineage', 'Deposit ADAPT to recover an abandoned strategy and preserve its ancestral performance memory.', 'Revive soul'],
+                market: [data.type.includes('Clone') ? 'Rent this clone' : 'Acquire this master', data.type.includes('Clone') ? 'Deposit recurring ADAPT to rent this clone and access its live performance.' : 'Deposit ADAPT to acquire the master organism and its complete lineage.', data.type.includes('Clone') ? 'Start recurring rental' : 'Buy master organism']
+            }[modulo] || ['Direct the organism', 'Deposit ADAPT to influence this organism.', 'Deposit ADAPT'];
+            document.getElementById('agentActionEyebrow').textContent = actionCopy[0];
+            document.getElementById('agentActionHelp').textContent = actionCopy[1];
+            document.getElementById('agentActionButton').textContent = actionCopy[2];
+            const intelligence = strategyIntelligence[nome] || { summary: 'A concise summary derived from the genetic family and observed habitat behavior.', logic: 'Entry and exit pattern protected until the next disclosure level.', risk: 'Risk profile and failure conditions protected.', code: 'Internal architecture, modules, and dependencies protected.' };
+            currentInsightLevel = 1;
+            document.getElementById('strategySummary').textContent = intelligence.summary;
+            document.getElementById('insightLogic').textContent = intelligence.logic;
+            document.getElementById('insightRisk').textContent = intelligence.risk;
+            document.getElementById('insightCode').textContent = intelligence.code;
+            document.getElementById('insightRisk').classList.add('insight-locked');
+            document.getElementById('insightCode').classList.add('insight-locked');
+            document.getElementById('insightLevel').textContent = '1 / 3 unlocked';
+            document.getElementById('insightCost').textContent = 'Unlock next insight · 5 ADAPT';
+            document.getElementById('insightUnlockButton').disabled = false;
+            document.getElementById('insightUnlockButton').textContent = 'Unlock insight';
+            const modal = document.getElementById('agentModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function fecharPerfil() {
+            const modal = document.getElementById('agentModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function fecharPerfilSeFora(event) { if (event.target.id === 'agentModal') fecharPerfil(); }
+        document.addEventListener('click', event => { if (event.target.closest('button, textarea, input, select, .genetic-intake')) return; const target = event.target.closest('[data-agent-profile]'); if (target) abrirPerfil(target.dataset.agentProfile, target.dataset.agentModule || 'market'); });
+        document.addEventListener('keydown', event => { if (event.key === 'Escape') fecharPerfil(); });
+
+        function showToast(message, tone = 'cyan') {
+            const toast = document.getElementById('toast');
+            const messageEl = document.getElementById('toastMessage');
+            messageEl.textContent = message;
+            toast.classList.remove('hidden', 'border-cyan-300/35', 'border-emerald-300/35', 'border-amber-300/35');
+            toast.classList.add(tone === 'emerald' ? 'border-emerald-300/35' : tone === 'amber' ? 'border-amber-300/35' : 'border-cyan-300/35');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.add('hidden'), 4200);
+        }
+
+        function atualizarSaldoAdapt() {
+            document.getElementById('adaptBalance').innerHTML = `${adaptBalanceValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span class="text-[10px] text-slate-400">$ADAPT</span>`;
+        }
+
+        function executarAcaoAgente() {
+            const amount = Number(document.getElementById('agentAdaptAmount').value);
+            if (!Number.isFinite(amount) || amount <= 0) { showToast('Enter a valid ADAPT amount.', 'amber'); return; }
+            if (amount > adaptBalanceValue) { showToast('Insufficient ADAPT balance for this action.', 'amber'); return; }
+            adaptBalanceValue -= amount;
+            atualizarSaldoAdapt();
+            const amountText = amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const profile = agentProfiles[currentAgentName] || agentProfiles['MomentumRaw_v2'];
+            const message = currentAgentModule === 'ventre'
+                ? `${amountText} ADAPT routed to the Ventre. The LLM token flow for ${currentAgentName} has been accelerated.`
+                : currentAgentModule === 'soul'
+                    ? `${amountText} ADAPT deposited into the Soul Bank. The soul of ${currentAgentName} entered the reanimation queue.`
+                    : profile.type.includes('Clone')
+                        ? `${amountText} ADAPT reserved. Recurring rental for ${currentAgentName} started.`
+                        : `${amountText} ADAPT deposited. Master ${currentAgentName} acquired for your lineage.`;
+            showToast(message, currentAgentModule === 'soul' ? 'amber' : 'emerald');
+            fecharPerfil();
+        }
+
+        function desbloquearInsight() {
+            const costs = { 1: 5, 2: 10 };
+            if (currentInsightLevel >= 3) { showToast('Strategy Brief completo. Todas as camadas foram liberadas.', 'emerald'); return; }
+            const cost = costs[currentInsightLevel];
+            if (cost > adaptBalanceValue) { showToast('Insufficient ADAPT balance to unlock this layer.', 'amber'); return; }
+            adaptBalanceValue -= cost;
+            atualizarSaldoAdapt();
+            currentInsightLevel++;
+            if (currentInsightLevel >= 2) document.getElementById('insightRisk').classList.remove('insight-locked');
+            if (currentInsightLevel >= 3) document.getElementById('insightCode').classList.remove('insight-locked');
+            document.getElementById('insightLevel').textContent = `${currentInsightLevel} / 3 unlocked`;
+            if (currentInsightLevel >= 3) {
+                document.getElementById('insightCost').textContent = 'Full strategy intelligence unlocked';
+                document.getElementById('insightUnlockButton').textContent = 'All insights unlocked';
+                document.getElementById('insightUnlockButton').disabled = true;
+            } else {
+                document.getElementById('insightCost').textContent = 'Unlock final layer · 10 ADAPT';
+            }
+            showToast(`${cost} ADAPT invested. Layer ${currentInsightLevel} do Strategy Brief unlocked.`, 'emerald');
+        }
+
+        function conectarCarteira(button) {
+            button.disabled = true;
+            button.textContent = '0x7A91…C40F';
+            button.classList.add('text-emerald-300', 'border-emerald-300/35');
+            showToast('Wallet connected in simulation mode. No transaction was broadcast.', 'emerald');
+        }
+
+        function listarMutaDeGen(name) {
+            showToast(`${name} license selected in simulation mode. Review the risk dossier before any external operation.`, 'amber');
+        }
+
+        function alternarInjecaoCodigo(name, button) {
+            const panel = document.getElementById(`intake-${name}`);
+            panel.classList.toggle('hidden');
+            button.textContent = panel.classList.contains('hidden') ? 'Open genetic-code intake' : 'Close genetic-code intake';
+        }
+
+        function aprovarCodigoGenetico(name, button) {
+            const input = document.getElementById(`code-${name}`);
+            const status = document.getElementById(`status-${name}`);
+            const code = input.value.trim();
+            const hasLogic = code.length >= 120 && /(function|=>|class\s+\w+)/.test(code) && /(return|if\s*\(|const\s+\w+\s*=)/.test(code);
+            const hasAuthorship = /(@author|author\s*:|copyright|license)/i.test(code);
+            if (!hasLogic) { status.textContent = 'Rejected · minimum executable logic not detected.'; status.className = 'genetic-status text-amber-300'; showToast('Genome rejected. Add executable logic, a return path, and a decision rule.', 'amber'); return; }
+            if (!hasAuthorship) { status.textContent = 'Rejected · authorship marker is required.'; status.className = 'genetic-status text-amber-300'; showToast('Genome rejected. Add an @author, author:, copyright, or license marker.', 'amber'); return; }
+            const fingerprint = `${code.length}:${code.slice(0, 24)}:${code.slice(-24)}`;
+            if (approvedGenomes.has(fingerprint)) { status.textContent = 'Rejected · duplicate genome fingerprint.'; status.className = 'genetic-status text-amber-300'; showToast('This genome fingerprint is already registered.', 'amber'); return; }
+            approvedGenomes.add(fingerprint);
+            const mined = 12;
+            adaptBalanceValue += mined;
+            atualizarSaldoAdapt();
+            status.textContent = `Approved · authorship and logic verified · +${mined} ADAPT mined.`;
+            status.className = 'genetic-status text-emerald-300';
+            button.disabled = true; button.textContent = 'Genome approved · ADAPT mined'; button.classList.add('opacity-60', 'cursor-not-allowed');
+            const card = button.closest('[data-agent-profile]');
+            const mutationButton = card.querySelector('.raw-mutation-button');
+            mutationButton.disabled = false; mutationButton.textContent = 'Create Bio Agent from this Raw Bot'; mutationButton.classList.remove('border-slate-700', 'bg-slate-900', 'text-slate-600', 'cursor-not-allowed'); mutationButton.classList.add('border-cyan-300/30', 'bg-cyan-300/[.06]', 'text-cyan-200');
+            card.querySelector('.absolute').textContent = 'Genome approved · ready for incubation';
+            showToast(`${name} passed the genome gate and mined ${mined} initial ADAPT.`, 'emerald');
+        }
+
+        function inseminarRawBot() {
+            rawBotCount++;
+            const name = `ThesisRaw_${String(rawBotCount).padStart(2, '0')}`;
+            const card = document.createElement('div');
+            card.className = 'bg-slate-950/80 border border-cyan-500/35 rounded-2xl p-6 space-y-4 relative overflow-hidden';
+            card.dataset.agentProfile = name; card.dataset.agentModule = 'ventre';
+            card.innerHTML = `<div class="absolute top-0 right-0 bg-cyan-500/15 text-cyan-300 text-[10px] font-mono px-3 py-1 rounded-bl-xl font-bold">Genome intake required</div><span class="text-xs font-mono text-slate-500 block">Capsule #VENTRE-${String(rawBotCount).padStart(2, '0')} • New Raw Bot</span><h3 class="text-white font-bold text-lg">${name}</h3><div class="space-y-2 text-xs mono"><div class="flex justify-between"><span class="text-slate-400">LLM token consumption:</span><span class="text-cyan-400 font-bold">0 Tok</span></div><div class="flex justify-between"><span class="text-slate-400">Initial mining:</span><span class="text-purple-400 font-bold">Locked</span></div></div><button onclick="event.stopPropagation(); alternarInjecaoCodigo('${name}', this)" class="w-full border border-cyan-300/30 bg-cyan-300/[.06] px-3 py-2 text-[10px] font-semibold text-cyan-200 hover:bg-cyan-300/15">Open genetic-code intake</button><div id="intake-${name}" class="genetic-intake hidden space-y-3 p-3 text-left"><div class="flex items-center justify-between"><span class="eyebrow text-cyan-300">Genetic code injection</span><span class="mono text-[9px] text-slate-500">RAW-BOT INPUT</span></div><p class="text-[10px] leading-4 text-slate-500">Paste code you developed, downloaded, or purchased. The protocol checks minimum logic and an authorship marker before initial ADAPT mining.</p><textarea id="code-${name}" class="w-full p-3" placeholder="// @author: your-name\nfunction decide(market) {\n  // raw-bot logic\n  return signal;\n}"></textarea><div id="status-${name}" class="genetic-status text-slate-500">Awaiting genetic code.</div><button onclick="event.stopPropagation(); aprovarCodigoGenetico('${name}', this)" class="w-full border border-emerald-300/35 bg-emerald-300/[.06] px-3 py-2 text-[10px] font-semibold text-emerald-200 hover:bg-emerald-300/[.12]">Validate &amp; mine initial ADAPT</button></div><button disabled onclick="mutarRawBot('${name}', this)" class="raw-mutation-button w-full border border-slate-700 bg-slate-900 px-3 py-2 text-[10px] font-semibold text-slate-600 cursor-not-allowed">Approve genetic code first</button>`;
+            document.getElementById('incubacaoList').appendChild(card);
+            document.getElementById('capsuleCount').textContent = `${String(rawBotCount).padStart(2, '0')} active capsules`;
+            showToast(`${name} was seeded and added to the Ventre.`, 'cyan');
+        }
+
+        function filtrarRanking(filtro, botao) {
+            document.querySelectorAll('.rank-filter').forEach(btn => btn.classList.remove('active'));
+            botao.classList.add('active');
+            document.querySelectorAll('#rankingList .ranking-row').forEach(row => {
+                row.style.display = (filtro === 'all' || row.dataset.state === filtro) ? '' : 'none';
+            });
+        }
+
+        function atualizarRankingAoVivo() {
+            document.querySelectorAll('#rankingList .ranking-row').forEach(row => {
+                const base = Number(row.dataset.alpha);
+                if (base <= 0) return;
+                const next = base + (Math.random() * 0.32 - 0.08);
+                row.dataset.alpha = next.toFixed(2);
+                const alpha = row.querySelector('.rank-alpha');
+                if (alpha) alpha.textContent = `${next >= 0 ? '+' : ''}${next.toFixed(2)}%`;
+            });
+        }
+
+        function dispararDivisaoCelular() {
+            const container = document.getElementById('janela2Container');
+            const button = document.getElementById('mitosisButton');
+            agenteMutadoPronto = true;
+            button.disabled = true;
+            button.textContent = '✓ Bio Agent ready — drag to a habitat';
+            button.classList.remove('from-emerald-500', 'to-cyan-500');
+            button.classList.add('bg-emerald-300', 'cursor-not-allowed', 'opacity-80');
+            
+            container.className = "bg-slate-900/90 p-3 rounded-xl border border-emerald-500/50 space-y-1 shadow-lg shadow-emerald-500/20 cursor-grab active:cursor-grabbing hover:border-emerald-400 transition select-none";
+            container.setAttribute('draggable', 'true');
+            container.setAttribute('ondragstart', 'arrastarAgente(event)');
+
+            container.innerHTML = `
+                <span class="text-[10px] text-emerald-400 block uppercase font-bold">🧬 Bio Agent (ready for Kanban)</span>
+                <span class="text-emerald-400 font-bold text-sm block">Sharpe: 2.84 <span class="text-[10px] text-emerald-500">(+153%)</span></span>
+                <span class="text-[9px] text-cyan-300 block font-bold mt-1">✨ [Drag to an arena]</span>
+            `;
+            showToast("Mitosis complete. The Bio Agent can now be dragged into any habitat.", 'emerald');
+        }
+
+        function arrastarAgente(e) {
+            e.dataTransfer.setData("text/plain", "MomentumRaw_v2");
+        }
+
+        function arrastarAgenteExistente(e, agentId) {
+            e.dataTransfer.setData('application/x-mutagent-id', agentId);
+            e.dataTransfer.setData('text/plain', 'MomentumRaw_v2');
+        }
+
+        function permitirDrop(e) {
+            e.preventDefault();
+        }
+
+        function soltarNaArena(e, destinoNome) {
+            e.preventDefault();
+            if (!agenteMutadoPronto) {
+                showToast("Complete cell division before moving the agent.", 'amber');
+                return;
+            }
+
+            const existingId = e.dataTransfer.getData('application/x-mutagent-id');
+            const existingAgent = activeAgentsInArena.find(agent => agent.id === existingId);
+            if (existingAgent) {
+                existingAgent.destination = destinoNome;
+            } else {
+                const rawName = e.dataTransfer.getData('text/plain') || 'MomentumRaw_v2';
+                activeAgentsInArena.push({ id: 'agent_' + Date.now(), name: rawName, destination: destinoNome, entryTime: new Date(), netAlpha: 0.00, tokenBurn: 0, secondsElapsed: 0 });
+            }
+
+            renderizarAgentesNasArenas();
+
+            if(!simulationInterval) {
+                simulationInterval = setInterval(atualizarMetricasArena, 1000);
+            }
+        }
+
+        function soltarNoMarketplace(e) {
+            e.preventDefault();
+            if (!agenteMutadoPronto) { showToast('Complete cell division before listing an agent.', 'amber'); return; }
+            const existingId = e.dataTransfer.getData('application/x-mutagent-id');
+            const agent = activeAgentsInArena.find(item => item.id === existingId);
+            if (!agent) { showToast('Move the agent into a habitat and generate performance before listing.', 'amber'); return; }
+            if (agent.secondsElapsed < 5 || agent.netAlpha < 2) { showToast('Insufficient maturity. The agent needs at least 5s and +2% Net Alpha.', 'amber'); return; }
+            agent.destination = 'Marketplace';
+            renderizarAgentesNasArenas();
+            showToast(`${agent.name} reached market maturity and was listed.`, 'emerald');
+        }
+
+        function filtrarTimeframe(timeframe, button) {
+            const group = button.parentElement;
+            group.querySelectorAll('.time-filter').forEach(item => item.classList.remove('active'));
+            button.classList.add('active');
+            document.querySelectorAll('#controlledTelemetry, #globalTelemetry').forEach(el => { el.textContent = `Token burn efficiency / ${timeframe} · recalculating`; });
+            showToast(`Performance recalculated for ${timeframe}.`, 'cyan');
+        }
+
+        function arrastarRawBot(e, name) { e.dataTransfer.setData('text/plain', name); }
+
+        function mutarRawBot(name, button) {
+            const card = button.closest('[data-agent-profile]');
+            agenteMutadoPronto = true;
+            card.setAttribute('draggable', 'true');
+            card.setAttribute('ondragstart', `arrastarRawBot(event, '${name}')`);
+            card.classList.add('border-emerald-400/60', 'shadow-lg', 'shadow-emerald-500/10');
+            button.textContent = '✓ Bio Agent ready — drag this organism';
+            button.disabled = true;
+            button.classList.add('cursor-not-allowed', 'opacity-70');
+            if (name === 'MomentumRaw_v2') {
+                const container = document.getElementById('janela2Container');
+                container.setAttribute('draggable', 'true');
+                container.setAttribute('ondragstart', `arrastarRawBot(event, '${name}')`);
+                container.classList.add('border-emerald-300/70', 'shadow-lg');
+                container.innerHTML = `<span class="text-[10px] text-emerald-300 block uppercase font-bold">Window 2 (Bio Agent)</span><span class="text-emerald-300 font-bold text-sm block">Sharpe: 2.84 <span class="text-[10px]">(+153%)</span></span><span class="text-[9px] text-cyan-300 block font-bold mt-1">Drag this organism to a habitat</span>`;
+            }
+            showToast(`${name} completed mitosis independently and is ready to move.`, 'emerald');
+        }
+
+        function renderizarAgentesNasArenas() {
+            const globalContainer = document.getElementById('agentesArenaUsuarioList');
+            const controlledContainer = document.getElementById('agentesControladosList');
+            const marketplaceContainer = document.getElementById('marketplaceAgentsList');
+            
+            globalContainer.innerHTML = '';
+            controlledContainer.innerHTML = '';
+            marketplaceContainer.innerHTML = '';
+            
+            activeAgentsInArena.forEach(agent => {
+                const elapsedMin = Math.floor(agent.secondsElapsed / 60);
+                const elapsedSec = agent.secondsElapsed % 60;
+                const timeString = `${elapsedMin.toString().padStart(2, '0')}:${elapsedSec.toString().padStart(2, '0')}`;
+                const organismScale = Math.max(.78, Math.min(1.38, 1 + agent.netAlpha / 120));
+                const tokenEfficiency = agent.tokenBurn > 0 ? (Math.max(0, agent.netAlpha) / agent.tokenBurn * 100).toFixed(1) : '—';
+
+                const htmlCard = `
+                    <div draggable="true" ondragstart="arrastarAgenteExistente(event, '${agent.id}')" data-agent-profile="${agent.name}" data-agent-module="${agent.destination === 'Controlled Habitat' ? 'ventre' : 'market'}" class="agent-rail-row group flex items-center gap-3 border-b border-slate-800/70 px-2 py-2 text-left mono text-[10px] hover:bg-white/[.03]">
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full ${agent.destination === 'Controlled Habitat' ? 'bg-cyan-300' : 'bg-purple-300'} shadow-[0_0_8px_currentColor]"></span>
+                        <span class="min-w-0 flex-1 truncate text-slate-300">${agent.name}</span>
+                        <span class="hidden sm:inline text-slate-600">${agent.secondsElapsed}s</span>
+                        <span class="text-emerald-300">${agent.netAlpha >= 0 ? '+' : ''}${agent.netAlpha.toFixed(2)}%</span>
+                        <span class="hidden sm:inline text-amber-200">${agent.tokenBurn} tok</span>
+                        <span class="w-12 text-right text-slate-500">${tokenEfficiency}%</span>
+                    </div>
+                `;
+
+                if (agent.destination === 'Free Habitat') {
+                    globalContainer.innerHTML += htmlCard;
+                } else if (agent.destination === 'Controlled Habitat') {
+                    controlledContainer.innerHTML += htmlCard;
+                } else if (agent.destination === 'Marketplace') {
+                    marketplaceContainer.innerHTML += htmlCard;
+                }
+            });
+            document.getElementById('controlledTelemetry').textContent = `Token burn efficiency · ${activeAgentsInArena.filter(a => a.destination === 'Controlled Habitat').length} organisms active`;
+            document.getElementById('globalTelemetry').textContent = `Synapse activity · ${activeAgentsInArena.filter(a => a.destination === 'Free Habitat').length} organisms competing`;
+            renderLivingAgents();
+        }
+
+        function renderLivingAgents() {
+            const layers = { 'Controlled Habitat': document.getElementById('controlledCreatureLayer'), 'Free Habitat': document.getElementById('globalCreatureLayer') };
+            const now = Date.now() / 1000;
+            ['Controlled Habitat', 'Free Habitat'].forEach(destination => {
+                const layer = layers[destination];
+                const agents = activeAgentsInArena.filter(agent => agent.destination === destination);
+                const current = [...layer.querySelectorAll('.bio-creature')];
+                if (current.length !== agents.length) {
+                    layer.innerHTML = '';
+                    agents.forEach((agent, index) => {
+                        const creature = document.createElement('div');
+                        const dna = dnaCatalog[agent.name] || ['#67e8f9', 'polygon', '2.6s', '#fef08a', '1s'];
+                        creature.className = `bio-creature ${destination === 'Free Habitat' ? 'purple' : ''} variant-${dna[1]} ${agent.netAlpha < 0 ? 'prey' : ''}`;
+                        creature.dataset.agentId = agent.id; creature.dataset.agentProfile = agent.name; creature.dataset.agentModule = destination === 'Controlled Habitat' ? 'ventre' : 'market'; creature.draggable = true; creature.ondragstart = event => arrastarAgenteExistente(event, agent.id);
+                        creature.innerHTML = `<span class="bio-pulse"></span><span class="bio-core"></span><span class="bio-signal"></span><span class="creature-label">${agent.name}</span>`;
+                        creature.style.setProperty('--dna-color', dna[0]); creature.style.setProperty('--dna-speed', dna[2]); creature.style.setProperty('--dna-signal', dna[3]); creature.style.setProperty('--dna-blink', dna[4]); creature.style.setProperty('--dna-pulse', dna[2]);
+                        layer.appendChild(creature);
+                    });
+                    const empty = document.createElement('div'); empty.className = 'arena-empty absolute inset-0 flex items-end justify-center pb-5 pointer-events-none'; empty.innerHTML = `<span class="eyebrow text-slate-700">No living organisms / drop an agent</span>`; layer.appendChild(empty);
+                }
+                layer.querySelector('.arena-empty')?.classList.toggle('hidden', agents.length > 0);
+                const creatures = [...layer.querySelectorAll('.bio-creature')];
+                agents.forEach((agent, index) => {
+                    const efficiency = agent.tokenBurn ? Math.max(0, agent.netAlpha) / agent.tokenBurn : 0;
+                    const size = Math.round(Math.max(38, Math.min(88, 48 + agent.netAlpha * .45 + efficiency * 90)));
+                    const x = 22 + ((index * 37 + Math.sin(now * .55 + index) * 11 + 100) % 56);
+                    const y = 22 + ((index * 29 + Math.cos(now * .7 + index) * 14 + 100) % 52);
+                    const creature = creatures[index];
+                    if (!creature) return;
+                    creature.style.width = `${size}px`; creature.style.height = `${size}px`; creature.style.left = `${x}%`; creature.style.top = `${y}%`; creature.style.transform = 'translate(-50%, -50%)';
+                    creature.classList.toggle('prey', agent.netAlpha < 0);
+                });
+                let clash = layer.querySelector('.impact-burst');
+                if (agents.length > 1 && !clash) { clash = document.createElement('span'); clash.className = 'impact-burst'; layer.appendChild(clash); }
+                if (clash) { clash.classList.toggle('hidden', agents.length < 2); clash.style.left = `${48 + Math.sin(now) * 8}%`; clash.style.top = `${44 + Math.cos(now * .8) * 7}%`; }
+            });
+        }
+
+        function atualizarMetricasArena() {
+            activeAgentsInArena.forEach(agent => {
+                agent.secondsElapsed++;
+                agent.netAlpha += (Math.random() * 0.5 - 0.18); 
+                agent.tokenBurn = (agent.tokenBurn || 0) + Math.floor(Math.random() * 18 + 8);
+            });
+            renderizarAgentesNasArenas();
+        }
+
+        function reanimarAlma() {
+            showToast("Simulated deposit confirmed. Bot_Alpha_Extinct_v1 entered the Ventre recovery queue.", 'amber');
+        }
+
+        function adotarAlma(nomeAlma) {
+            showToast("Orphan DNA " + nomeAlma + " licensed and added to the incubation queue.", 'cyan');
+        }
+
+        renderizarAgentesNasArenas();
+        rankingInterval = setInterval(atualizarRankingAoVivo, 1000);
+        setInterval(renderLivingAgents, 220);
+    </script>
+
+    <footer class="border-t border-slate-900 py-8 text-center text-xs text-slate-600">
+        <p>MutaGen.t Protocol © 2026 • Digital DNA Evolution | Revenue Governance | LLM Token Treasury</p>
+    </footer>
+
+</body>
+</html>

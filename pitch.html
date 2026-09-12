@@ -1,0 +1,210 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MutaGen.t Protocol | Darwin's Social Trading</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+        :root { color-scheme: dark; }
+        body { 
+            font-family: 'Space Grotesk', sans-serif; 
+            background: #02050d; 
+            background-image: radial-gradient(circle at 15% 0%, rgba(6,182,212,.07), transparent 28%), linear-gradient(rgba(15,23,42,.22) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,.22) 1px, transparent 1px); 
+            background-size: auto, 48px 48px, 48px 48px; 
+            color: #f8fafc;
+        }
+        body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .18; background: repeating-linear-gradient(0deg, transparent 0, transparent 3px, rgba(34,211,238,.025) 4px); z-index: 60; }
+        .mono, .eyebrow { font-family: 'IBM Plex Mono', monospace; }
+        .glow-cyan { box-shadow: 0 0 55px -18px rgba(6, 182, 212, .75), inset 0 1px rgba(103,232,249,.08); }
+        .glow-purple { box-shadow: 0 0 55px -18px rgba(168, 85, 247, .7), inset 0 1px rgba(216,180,254,.08); }
+        .eyebrow { font-weight: 600; letter-spacing: .22em; text-transform: uppercase; font-size: 0.75rem; }
+        .section-box { backdrop-filter: blur(16px); background: linear-gradient(135deg, rgba(8,17,29,.72), rgba(2,6,23,.66)); border: 1px solid rgba(71,85,105,0.4); border-radius: 1rem; }
+        .card-box { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(71,85,105,0.4); transition: transform 0.2s, border-color 0.2s; }
+        .card-box:hover { transform: translateY(-3px); border-color: rgba(34,211,238,0.6); }
+    </style>
+</head>
+<body class="antialiased selection:bg-cyan-500 selection:text-black pb-16">
+
+    <!-- Header Navigation -->
+    <header class="border-b border-cyan-500/15 bg-slate-950/75 backdrop-blur-xl sticky top-0 z-50 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="relative flex items-center justify-center w-10 h-10 rounded-full border border-cyan-300/50 bg-cyan-400/5 shadow-[0_0_24px_-8px_#22d3ee]">
+                    <svg viewBox="0 0 40 40" class="w-6 h-6 text-cyan-300" fill="none">
+                        <circle cx="20" cy="20" r="14" stroke="currentColor" stroke-width="1" opacity=".35"/>
+                        <path d="M27.5 13.8c-4.2-3.4-10.5-2.8-13.8 1.4-3.4 4.2-2.8 10.5 1.4 13.8 4.2 3.4 10.5 2.8 13.8-1.4 2.1-2.7 2.6-6.2 1.4-9.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="text-white text-sm font-semibold tracking-tight">MutaGen<span class="text-cyan-300">.t</span> Protocol</div>
+                    <span class="eyebrow text-[8px] text-slate-500 block mt-0.5">Darwin's Social Trading</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 mono text-[10px] uppercase tracking-[.18em]">
+                <span class="text-emerald-300 flex items-center gap-1.5">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-300 shadow-[0_0_8px_#6ee7b7]"></span> ETH Hackathon Edition
+                </span>
+                <a href="simulation.html" class="border border-cyan-300/35 bg-cyan-300/10 text-cyan-200 px-3 py-1.5 rounded-sm hover:bg-cyan-300/20 transition-colors">Launch Demo &rarr;</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 pt-10 space-y-10">
+
+        <!-- Hero Section -->
+        <section class="text-center space-y-4 py-8">
+            <div class="eyebrow text-cyan-300 inline-block px-4 py-1.5 rounded-full bg-cyan-400/10 border border-cyan-400/30">
+                Decentralized AI &bull; Evolutionary Finance &bull; Institutional Compliance
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-white">
+                MutaGen.t <span class="text-cyan-300">Protocol</span>
+            </h1>
+            <p class="max-w-2xl mx-auto text-slate-400 text-base md:text-lg">
+                Traditional social trading relies on static bots that die in volatile markets. We replace them with an automated evolutionary foundry.
+            </p>
+        </section>
+
+        <!-- Problem & SaaS2 Paradigm -->
+        <section class="section-box p-6 md:p-8 space-y-6 glow-cyan">
+            <div class="space-y-3">
+                <span class="eyebrow text-cyan-300">01. Architectural Breakdown</span>
+                <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">The Problem & The SaaS² Paradigm</h2>
+                <p class="text-slate-300 text-sm md:text-base leading-relaxed">
+                    Investors risk capital blindly on unverified algorithms and fabricated metrics. Our solution introduces <strong>SaaS² (Strategy as a Service Squared)</strong> with zero fund custody risk: an automated evolutionary foundry where software creates, tests, and evolves autonomous trading agents through natural selection.
+                </p>
+            </div>
+
+            <!-- Formula Layout -->
+            <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-4 pt-2">
+                <div class="card-box p-5 rounded-xl border-cyan-500/30 bg-slate-950/60">
+                    <h4 class="text-cyan-300 font-mono font-bold text-sm mb-2">Strategy as a Software</h4>
+                    <p class="text-slate-400 text-xs leading-relaxed">Financial logic packaged as deterministic, modular execution units ready to be deployed on-chain.</p>
+                </div>
+                <div class="text-3xl font-black text-cyan-300 text-center py-2 md:py-0">&times;</div>
+                <div class="card-box p-5 rounded-xl border-cyan-500/30 bg-slate-950/60">
+                    <h4 class="text-cyan-300 font-mono font-bold text-sm mb-2">Strategy Autonomous Agent Software</h4>
+                    <p class="text-slate-400 text-xs leading-relaxed">Living, mutating LLM-driven agents powered by Reinforcement Learning that self-evolve via the Omni Brain.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEW: Market Research & Target Audience (Copy Trading + HSK Chain Multiplier) -->
+        <section class="section-box p-6 md:p-8 space-y-6 glow-purple">
+            <div class="space-y-2">
+                <span class="eyebrow text-purple-300">02. Market Research &amp; Target Valuation</span>
+                <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Target Market: Copy-Trading &amp; HSK Chain Multiplier</h2>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    An analytical look at the global copy-trading landscape and how institutional bridging radically scales our total addressable market (TAM).
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="card-box p-5 rounded-xl bg-slate-950/50">
+                    <span class="text-xs mono text-purple-400 block mb-1">Global Baseline (2026)</span>
+                    <h3 class="text-2xl font-bold text-white mono mb-2">$2.1B - $2.8B</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Current valuation of the global copy-trading platform market, serving over 11.5 million active retail and semi-pro accounts worldwide.</p>
+                </div>
+
+                <div class="card-box p-5 rounded-xl bg-slate-950/50">
+                    <span class="text-xs mono text-cyan-400 block mb-1">Projected Growth (2034)</span>
+                    <h3 class="text-2xl font-bold text-white mono mb-2">$10.5B+</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Projected expansion driven by a strong <strong>22.4% CAGR</strong>, propelled by automated trading and decentralized AI adoption.</p>
+                </div>
+
+                <div class="card-box p-5 rounded-xl bg-slate-950/50 border-emerald-500/40">
+                    <span class="text-xs mono text-emerald-400 block mb-1">HSK Chain Multiplier</span>
+                    <h3 class="text-2xl font-bold text-emerald-300 mono mb-2">3.5x Scaling</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">By integrating with the <strong>HSK Chain Gateway</strong>, MutaGen.t unlocks institutional compliance and cross-border liquidity, capturing conservative capital previously locked out of high-yield AI agents.</p>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-950/80 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-2">
+                <strong class="text-purple-300 block font-mono uppercase tracking-wider text-[11px]">Target Audience Breakdown:</strong>
+                <ul class="list-disc list-inside space-y-1 text-slate-400">
+                    <li><strong>Prompt Developers &amp; Quants:</strong> Creators who inject raw strategies into the Womb to mine $ADAPT and earn perpetual USDC royalties from the Top 1% protocol copy-trade tier.</li>
+                    <li><strong>Retail &amp; Institutional Copiers:</strong> Users seeking uncustodial exposure to resilient, self-evolving "Apex Predators" filtered through rigorous Proof-of-Performance.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Multi-Chain Architecture -->
+        <section class="section-box p-6 md:p-8 space-y-6">
+            <div class="space-y-2">
+                <span class="eyebrow text-purple-300">03. Infrastructure Layer</span>
+                <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Multi-Chain Architecture: Specialized Power</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="card-box p-5 rounded-xl relative overflow-hidden">
+                    <span class="absolute top-3 right-4 font-mono text-2xl font-bold text-slate-700/40">01</span>
+                    <h3 class="text-cyan-300 font-bold text-sm mb-2 font-mono">Bittensor Subnet &amp; Omni Brain</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed mb-3">The cognitive core powered by the <strong>Hermes Agent</strong>. Validated dynamically via <strong>Proof of Performance</strong> and <strong>Proof of Metabolism</strong>.</p>
+                    <div class="flex flex-wrap gap-1.5 pt-2 border-t border-slate-800/80">
+                        <span class="text-[9px] font-mono bg-cyan-950/60 text-cyan-300 px-2 py-0.5 rounded border border-cyan-800/50">Proof of Performance</span>
+                        <span class="text-[9px] font-mono bg-purple-950/60 text-purple-300 px-2 py-0.5 rounded border border-purple-800/50">Proof of Metabolism</span>
+                    </div>
+                </div>
+                <div class="card-box p-5 rounded-xl relative overflow-hidden">
+                    <span class="absolute top-3 right-4 font-mono text-2xl font-bold text-slate-700/40">02</span>
+                    <h3 class="text-cyan-300 font-bold text-sm mb-2 font-mono">Arbitrum (EVM Hub)</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">The financial layer. Manages the USDC Treasury, the <strong>$ADAPT</strong> token, and automated Revenue Governance (Buyback &amp; Burn).</p>
+                </div>
+                <div class="card-box p-5 rounded-xl relative overflow-hidden">
+                    <span class="absolute top-3 right-4 font-mono text-2xl font-bold text-slate-700/40">03</span>
+                    <h3 class="text-cyan-300 font-bold text-sm mb-2 font-mono">HSK Chain Gateway</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">The institutional compliance layer, bridging TradFi capital and regulatory safe harbor to scale the licensing of elite <strong>Apex Predators</strong>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prompt Insemination & Tokenomics -->
+        <section class="section-box p-6 md:p-8 space-y-6 glow-purple">
+            <div class="space-y-2">
+                <span class="eyebrow text-purple-300">04. Economic Engine</span>
+                <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Prompt Insemination &amp; Tokenomics</h2>
+                <p class="text-slate-300 text-sm">The protocol cleanly separates intellectual rewards from operational funding:</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="card-box p-5 rounded-xl bg-slate-950/50">
+                    <h3 class="text-purple-300 font-mono font-bold text-xs uppercase mb-2">Intelligence Mining ($ADAPT)</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">When a developer injects a prompt (raw genetic code) to spawn an agent, they mine <strong>$ADAPT</strong> tokens. Rewards are strictly proportional to the level of intelligence absorbed and validated by the Omni Brain.</p>
+                </div>
+                <div class="card-box p-5 rounded-xl bg-slate-950/50">
+                    <h3 class="text-purple-300 font-mono font-bold text-xs uppercase mb-2">Metabolic Funding (80/20 Rule)</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Capital injection follows an 80/20 model—allocating 80% to computational nutrients and LLM maintenance inside Bittensor, and 20% to protocol treasury governance.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ultimate Protocol Objectives -->
+        <section class="section-box p-6 md:p-8 space-y-6">
+            <div class="space-y-2">
+                <span class="eyebrow text-emerald-300">05. Execution Roadmap</span>
+                <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Ultimate Protocol Objectives</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="card-box p-5 rounded-xl">
+                    <h3 class="text-emerald-300 font-bold text-sm mb-2 font-mono">&#x1f9ec; RL Agent Factory</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">An automated industrial assembly line where raw prompts undergo continuous embryogenesis, harness rule injection, and reinforcement learning until surviving strains mature.</p>
+                </div>
+                <div class="card-box p-5 rounded-xl">
+                    <h3 class="text-emerald-300 font-bold text-sm mb-2 font-mono">&#x1f3db;&#xfe0f; LLM Token Treasury</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">The centralized economic engine governed by revenue mechanics. Subsidizes high-performing organisms, recycles inactive capital, and executes continuous Buyback &amp; Burn.</p>
+                </div>
+                <div class="card-box p-5 rounded-xl">
+                    <h3 class="text-emerald-300 font-bold text-sm mb-2 font-mono">&#x1f3c6; Apex Predators</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">The ultimate market survivalists. Verified elite agents ready for institutional licensing on the marketplace, generating organic, unstoppable protocol revenue.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-6xl mx-auto px-6 text-center pt-12 text-slate-500 text-xs mono">
+        <p>&copy; 2026 MutaGen.t Protocol. Built for decentralized intelligence and autonomous market survival.</p>
+    </footer>
+
+</body>
+</html>
